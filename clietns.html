@@ -58,7 +58,7 @@
                         <td>89123456789</td>
                         <td>12.01.2000</td>
                         <td>12.01.2025</td>
-                        <td><i class="fa fa-history"></i></td>
+                        <td><i class="fa fa-history" onclick="MicroModal.show('history-modal')"></i></td>
                         <td><i class="fa fa-pencil" onclick="MicroModal.show('edit-modal')"></i></td>
                         <td><i class="fa fa-trash" onclick="MicroModal.show('delete-modal')"></i></td>
                     </tr>
@@ -325,23 +325,6 @@
         </div>
       </div>
 
-      <div class="modal micromodal-slide" id="delete-modal" aria-hidden="true">
-        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-            <header class="modal__header">
-              <h2 class="modal__title" id="modal-1-title">
-                Вы уверены, что хотите удалить клиента?
-              </h2>
-              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
-            </header>
-            <main class="modal__content" id="modal-1-content">
-                <button class="modal__btn danger">Удалить</button>
-                <button class="modal__btn" data-micromodal-close>Отменить</button>
-            </main>
-          </div>
-        </div>
-      </div>
-
       <div class="modal micromodal-slide" id="edit-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
@@ -370,6 +353,60 @@
                         <button type="button" class="modal__btn" data-micromodal-close>Отменить</button>
                     </div>
                 </form>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal micromodal-slide" id="delete-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="modal-1-title">
+                Вы уверены, что хотите удалить клиента?
+              </h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="modal-1-content">
+                <button class="modal__btn danger">Удалить</button>
+                <button class="modal__btn" data-micromodal-close>Отменить</button>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal micromodal-slide" id="history-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="modal-1-title">
+                История заказов
+              </h2>
+              <small>Фамилия Имя Отчество</small>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="modal-1-content">
+                <div class="order">
+                    <div class="order__info">
+                        <h3 class="order__number">Заказы №1</h3>
+                        <time class="order__date">Дата оформления : 25-01-13 09:25:30</time>
+                        <p class="order__total">Общая сумма : 300.00</p>
+                    </div>
+                    <table class="order__items">
+                        <tr>
+                            <th>ИД</th>
+                            <th>Название товара</th>
+                            <th>Количество</th>
+                            <th>Цена</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Футболка</td>
+                            <td>10</td>
+                            <td>10000</td>
+                        </tr>
+                    </table>
+                </div>
             </main>
           </div>
         </div>

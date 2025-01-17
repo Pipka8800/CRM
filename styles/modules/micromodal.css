@@ -225,3 +225,108 @@
   transform-origin: left;
   animation: formIn 0.3s ease forwards;
 }
+
+/* Стили для блока заказа */
+.order {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.order:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    /* transform: translateY(-4px) scale(1.01); */
+}
+
+.order__info {
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 16px;
+}
+
+.order__info::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+    border-radius: 2px;
+}
+
+.order__number {
+    color: #1a365d;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+}
+
+.order__date {
+    display: inline-block;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 20px;
+}
+
+.order__total {
+    color: #1a365d;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.order__total::before {
+    content: '₽';
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Стили для таблицы заказов */
+.order__items {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.order__items th {
+    background: rgba(52, 152, 219, 0.08);
+    color: #1a365d;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order__items td {
+    padding: 16px;
+    color: #334155;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.4);
+    font-size: 15px;
+}
+
+.order__items tr:last-child td {
+    border-bottom: none;
+}
+
+.order__items tr:hover td {
+    background: rgba(52, 152, 219, 0.04);
+    transition: background-color 0.2s ease;
+}
