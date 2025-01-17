@@ -176,3 +176,75 @@
     position: sticky;
     top: 16px;
 }
+
+/* Адаптивность */
+
+/* Размер экранов от 992 до 1400 */
+@media(max-width: 1400px){}
+
+/* Размер экранов от 768 до 992 */
+@media(max-width: 992px){}
+
+/* Размер экранов от 576 до 768 */
+@media(max-width: 768px) {
+    .main__form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .main__input,
+    .main__select {
+        width: 100%;
+    }
+    
+    .main__clients {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .main__clients table {
+        min-width: 700px;
+    }
+    
+    .main__clients th,
+    .main__clients td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .main__clients td i {
+        font-size: 14px;
+    }
+}
+
+/* Размер экранов от 350 до 576 */
+@media(max-width: 576px) {
+    .header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .header__links {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .main__clients table {
+        min-width: 500px;
+    }
+    
+    .main__clients th,
+    .main__clients td {
+        padding: 6px 8px;
+        font-size: 8px;
+    }
+    
+    .main__clients td i {
+        font-size: 13px;
+    }
+    
+    .main__clients__title {
+        font-size: 20px;
+    }
+}
