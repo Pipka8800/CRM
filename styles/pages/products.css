@@ -1,0 +1,250 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.header {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+}
+
+.header__admin {
+    color: #333;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.header__links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header__links a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.header__links a:hover {
+    color: #0056b3;
+}
+
+.header__logout {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.header__logout:hover {
+    color: #c82333;
+}
+
+.main__filters {
+    padding: 30px 0;
+    background-color: #f5f5f5;
+}
+
+.main__form {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.main__label {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.main__input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 250px;
+    transition: border-color 0.2s;
+}
+
+.main__input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+.main__input::placeholder {
+    color: #999;
+}
+
+.main__select {
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    transition: border-color 0.2s;
+}
+
+.main__select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+.main__clients thead th {
+    background-color: #157bda;
+    color: white;
+}
+
+.main__clients table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.main__clients th,
+.main__clients td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.main__clients th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+}
+
+.main__clients tr:hover {
+    background-color: #e3e3e3;
+    transition: background-color 0.2s ease;
+}
+
+.main__clients td i {
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.main__clients td i.fa-history:hover {
+    color: #2196F3;
+}
+
+.main__clients td i.fa-pencil:hover {
+    color: #4CAF50;
+}
+
+.main__clients td i.fa-trash:hover {
+    color: #F44336;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .main__clients {
+        overflow-x: auto;
+    }
+}
+
+.main__clients__title {
+    font-size: 24px;
+    text-align: center;
+    margin: 16px 0;
+}
+
+.main__clients__add{
+    position: sticky;
+    top: 16px;
+}
+
+/* Адаптивность */
+
+/* Размер экранов от 992 до 1400 */
+@media(max-width: 1400px){}
+
+/* Размер экранов от 768 до 992 */
+@media(max-width: 992px){}
+
+/* Размер экранов от 576 до 768 */
+@media(max-width: 768px) {
+    .main__form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .main__input,
+    .main__select {
+        width: 100%;
+    }
+    
+    .main__clients {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .main__clients table {
+        min-width: 700px;
+    }
+    
+    .main__clients th,
+    .main__clients td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .main__clients td i {
+        font-size: 14px;
+    }
+}
+
+/* Размер экранов от 350 до 576 */
+@media(max-width: 576px) {
+    .header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .header__links {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .main__clients table {
+        min-width: 500px;
+    }
+    
+    .main__clients th,
+    .main__clients td {
+        padding: 6px 8px;
+        font-size: 8px;
+    }
+    
+    .main__clients td i {
+        font-size: 13px;
+    }
+    
+    .main__clients__title {
+        font-size: 20px;
+    }
+}
