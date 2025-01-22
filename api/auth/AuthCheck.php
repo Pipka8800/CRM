@@ -2,10 +2,10 @@
 <?php  
   
 //тестовый токен
-$_SESSION['token'] = '123456';  
+// $_SESSION['token'] = '1234561';  
   
 function AuthCheck($successPath = '', $errorPath = '') { 
-    require_once 'DB.php';  
+    require_once 'api/DB.php';  
      
     // проверка наличия ключа token в $_SESSION
     if (!isset($_SESSION['token'])&& $errorPath) {  

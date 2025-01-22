@@ -1,10 +1,12 @@
 <?php session_start();
 
-require_once 'modules/AuthCheck.php';
+require_once 'api/auth/AuthCheck.php';
 
 AuthCheck('', 'login.php');
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
