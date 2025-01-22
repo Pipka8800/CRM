@@ -60,21 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //Записать в сессию в поле token 
     $_SESSION['token'] = $token; 
-    
-    //Записать в БД в поле token 
-    try { 
-        $updateToken = $DB->prepare("UPDATE users SET token = ? WHERE login = ? AND password = ?"); 
-        $updateToken->execute([$token, $login, $password]); 
-            
-        // Если успешно, делаем редирект на страницу клиентов 
+
+    $DB->query(
+        "UPDATE users SET token = '$token' 
+        WHERE login = '$login' AND password = '$password'
+        ")->fetchAll();
         header('Location: ../../clients.php'); 
-        exit; 
-        
-    } catch(PDOException $e) { 
-        $_SESSION['login-errors']['token'] = 'Ошибка сохранения сессии'; 
-        header('Location: ../../login.php'); 
-        exit; 
-    }
 
 } else {
     echo json_encode([
