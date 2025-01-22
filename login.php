@@ -21,7 +21,7 @@ AuthCheck('clients.php');
             <h1>Вход в систему</h1>
             <div class="form-group">
                 <input type="text" id="login" name="login" placeholder="Логин">
-                <p style="color: red;">
+                <p class="error">
                     <?php
                     if (isset($_SESSION['login-errors'])) {
                         $errors = $_SESSION['login-errors'];
@@ -33,7 +33,7 @@ AuthCheck('clients.php');
             </div>
             <div class="form-group">
                 <input type="password" id="password" name="password" placeholder="Пароль">
-                <p style="color: red;">
+                <p class="error">
                     <?php
                     if (isset($_SESSION['login-errors'])) {
                         $errors = $_SESSION['login-errors'];
