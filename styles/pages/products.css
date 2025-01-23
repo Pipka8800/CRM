@@ -4,6 +4,7 @@
     padding: 0 15px;
 }
 
+/* Стили для хедера */
 .header {
     background: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -14,13 +15,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: auto;
 }
 
 .header__admin {
     color: #333;
     font-size: 1rem;
-    margin: 0;
 }
 
 .header__links {
@@ -32,9 +31,8 @@
 }
 
 .header__links a {
-    color: #007bff;
+    color: #157bda;
     text-decoration: none;
-    font-size: 1rem;
     transition: color 0.3s ease;
 }
 
@@ -45,7 +43,6 @@
 .header__logout {
     color: #dc3545;
     text-decoration: none;
-    font-size: 1rem;
     transition: color 0.3s ease;
 }
 
@@ -53,6 +50,7 @@
     color: #c82333;
 }
 
+/* Стили для основного контента */
 .main__filters {
     padding: 30px 0;
     background-color: #f5f5f5;
@@ -68,54 +66,30 @@
 .main__label {
     font-size: 16px;
     color: #333;
-    font-weight: 500;
 }
 
 .main__input {
     padding: 10px 15px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 14px;
-    width: 250px;
-    transition: border-color 0.2s;
-}
-
-.main__input:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
-}
-
-.main__input::placeholder {
-    color: #999;
 }
 
 .main__select {
-    padding: 10px 35px 10px 15px;
+    padding: 10px 15px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 14px;
-    background-color: white;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    transition: border-color 0.2s;
+}
+.main__select1 {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
-.main__select:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
-}
-
-.main__clients thead th {
-    background-color: #157bda;
-    color: white;
-}
-
-.main__clients table {
+/* Стили для таблицы товаров */
+.main__products table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
@@ -123,128 +97,168 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.main__clients th,
-.main__clients td {
-    padding: 12px 15px;
-    text-align: center;
-    border-bottom: 1px solid #e0e0e0;
+.main__products th,
+.main__products td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
-.main__clients th {
-    background-color: #f5f5f5;
+.main__products th {
+    background-color: #157bda;
+    color: white;
     font-weight: 600;
-    color: #333;
 }
 
-.main__clients tr:hover {
+.main__products tr:hover {
     background-color: #e3e3e3;
     transition: background-color 0.2s ease;
 }
 
-.main__clients td i {
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s ease;
-}
-
-.main__clients td i.fa-history:hover {
-    color: #2196F3;
-}
-
-.main__clients td i.fa-pencil:hover {
-    color: #4CAF50;
-}
-
-.main__clients td i.fa-trash:hover {
-    color: #F44336;
-}
-
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-    .main__clients {
-        overflow-x: auto;
-    }
-}
-
-.main__clients__title {
+.main__products__title {
     font-size: 24px;
     text-align: center;
     margin: 16px 0;
 }
 
-.main__clients__add{
+.main__products__add {
     position: sticky;
     top: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
-/* Адаптивность */
+/* Стили для иконок в таблице */
+.main__products td i {
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+}
 
-/* Размер экранов от 992 до 1400 */
-@media(max-width: 1400px){}
+.main__products td i.fa-qrcode:hover {
+    color: #2196F3;
+}
 
-/* Размер экранов от 768 до 992 */
-@media(max-width: 992px){}
+.main__products td i.fa-pencil:hover {
+    color: #4CAF50;
+}
 
-/* Размер экранов от 576 до 768 */
-@media(max-width: 768px) {
+.main__products td i.fa-trash:hover {
+    color: #F44336;
+}
+
+/* Стили для модальных окон */
+.modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modal__form-group label {
+    font-size: 14px;
+    color: #333;
+}
+
+.modal__form-group input,
+.modal__form-group textarea {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.modal__form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.modal__btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal__btn-primary {
+    background-color: #157bda;
+    color: white;
+}
+
+.modal__btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal__btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal__btn-secondary:hover {
+    background-color: #545b62;
+}
+
+/* Стили для QR кода */
+.qr-code-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.qr-code-container img {
+    max-width: 200px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .header .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
     .main__form {
         flex-direction: column;
         align-items: stretch;
     }
-    
-    .main__input,
-    .main__select {
-        width: 100%;
-    }
-    
-    .main__clients {
+
+    .main__products {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
     }
-    
-    .main__clients table {
-        min-width: 700px;
+
+    .modal__form-actions {
+        flex-direction: column;
     }
-    
-    .main__clients th,
-    .main__clients td {
-        padding: 8px 10px;
-        font-size: 12px;
-    }
-    
-    .main__clients td i {
-        font-size: 14px;
+
+    .modal__btn {
+        width: 100%;
     }
 }
 
-/* Размер экранов от 350 до 576 */
-@media(max-width: 576px) {
-    .header .container {
-        flex-direction: column;
-        gap: 1rem;
+@media (max-width: 576px) {
+    .container {
+        padding: 0 5px;
     }
-    
-    .header__links {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
+
+    .main__products table {
+        font-size: 12px;
     }
-    
-    .main__clients table {
-        min-width: 500px;
+
+    .main__products th,
+    .main__products td {
+        padding: 8px;
     }
-    
-    .main__clients th,
-    .main__clients td {
-        padding: 6px 8px;
-        font-size: 8px;
-    }
-    
-    .main__clients td i {
-        font-size: 13px;
-    }
-    
-    .main__clients__title {
-        font-size: 20px;
+
+    .qr-code-container img {
+        max-width: 150px;
     }
 }

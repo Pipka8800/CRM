@@ -159,10 +159,284 @@
     color: #F44336;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
+/* Большие десктопы */
+@media (max-width: 1400px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    .main__clients table {
+        font-size: 14px;
+    }
+
+    .main__clients th,
+    .main__clients td {
+        padding: 10px 12px;
+    }
+}
+
+/* Средние десктопы */
+@media (max-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+
     .main__clients {
         overflow-x: auto;
+    }
+
+    .main__clients table {
+        min-width: 900px;
+        font-size: 13px;
+    }
+
+    .main__clients th,
+    .main__clients td {
+        padding: 8px 10px;
+    }
+
+    .history-table {
+        min-width: 700px;
+    }
+}
+
+/* Планшеты */
+@media (max-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+
+    .main__clients {
+        overflow-x: auto;
+        margin: 0 -15px;
+        padding: 0 15px;
+    }
+
+    .main__clients table {
+        min-width: 700px;
+        font-size: 12px;
+    }
+
+    .main__clients th,
+    .main__clients td {
+        padding: 8px;
+    }
+
+    .history-table {
+        min-width: 600px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .main__form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .main__input {
+        width: 100%;
+    }
+
+    /* Модальные окна */
+    .modal__container {
+        width: 90%;
+        margin: 10px;
+        padding: 15px;
+    }
+
+    /* История покупок */
+    #history-modal .modal__content {
+        overflow-x: auto;
+    }
+
+    .history-table {
+        min-width: 600px;
+    }
+
+    .modal__form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal__btn {
+        width: 100%;
+    }
+
+    .modal__title {
+        font-size: 18px;
+    }
+
+    .modal__form-group input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 576px) {
+    .container {
+        max-width: 540px;
+        padding: 0 5px;
+    }
+
+    .main__clients {
+        margin: 0 -5px;
+        padding: 0 5px;
+    }
+
+    .main__clients table {
+        min-width: 320px;
+        font-size: 10px;
+    }
+
+    .main__clients th,
+    .main__clients td {
+        padding: 2px;
+        max-width: 40px;
+    }
+
+    .main__clients td:nth-child(1),
+    .main__clients th:nth-child(1) {
+        max-width: 20px;
+    }
+
+    .main__clients td:nth-child(2),
+    .main__clients th:nth-child(2) {
+        max-width: 60px;
+    }
+
+    .main__clients td:nth-child(3),
+    .main__clients th:nth-child(3) {
+        max-width: 70px;
+    }
+
+    .main__clients td:nth-child(4),
+    .main__clients th:nth-child(4) {
+        max-width: 65px;
+    }
+
+    .main__clients td:nth-child(5),
+    .main__clients th:nth-child(5),
+    .main__clients td:nth-child(6),
+    .main__clients th:nth-child(6) {
+        max-width: 45px;
+    }
+
+    .main__clients td:last-child,
+    .main__clients th:last-child {
+        max-width: 30px;
+    }
+
+    .main__clients td,
+    .main__clients th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .main__clients td i {
+        font-size: 10px;
+        padding: 2px;
+    }
+
+    .main__clients thead th {
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px;
+    }
+
+    .header .container {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .header__links {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main__clients__title {
+        font-size: 20px;
+    }
+
+    .modal__container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .modal__title {
+        font-size: 16px;
+    }
+
+    .main__form {
+        gap: 10px;
+    }
+
+    .main__label {
+        font-size: 14px;
+    }
+
+    .main__input,
+    .main__select {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .main__clients {
+        margin: 0 -10px;
+        padding: 0 10px;
+    }
+
+    .main__clients table {
+        min-width: 400px;
+        font-size: 11px;
+    }
+
+    .main__clients th,
+    .main__clients td {
+        padding: 4px;
+    }
+
+    .main__clients td i {
+        font-size: 12px;
+    }
+
+    .history-table {
+        min-width: 300px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 4px;
+        font-size: 11px;
+    }
+
+    /* Улучшаем читаемость заголовков таблицы */
+    .main__clients thead th,
+    .history-table thead th {
+        white-space: nowrap;
+        font-weight: 600;
+        font-size: 10px;
+    }
+
+    /* Оптимизируем ширину колонок */
+    .main__clients td,
+    .main__clients th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80px;
     }
 }
 
@@ -177,74 +451,213 @@
     top: 16px;
 }
 
-/* Адаптивность */
-
-/* Размер экранов от 992 до 1400 */
-@media(max-width: 1400px){}
-
-/* Размер экранов от 768 до 992 */
-@media(max-width: 992px){}
-
-/* Размер экранов от 576 до 768 */
-@media(max-width: 768px) {
-    .main__form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .main__input,
-    .main__select {
-        width: 100%;
-    }
-    
-    .main__clients {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .main__clients table {
-        min-width: 700px;
-    }
-    
-    .main__clients th,
-    .main__clients td {
-        padding: 8px 10px;
-        font-size: 12px;
-    }
-    
-    .main__clients td i {
-        font-size: 14px;
-    }
+/* Стили для модальной формы */
+.modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-/* Размер экранов от 350 до 576 */
-@media(max-width: 576px) {
-    .header .container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .header__links {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .main__clients table {
-        min-width: 500px;
-    }
-    
-    .main__clients th,
-    .main__clients td {
-        padding: 6px 8px;
-        font-size: 8px;
-    }
-    
-    .main__clients td i {
-        font-size: 13px;
-    }
-    
-    .main__clients__title {
-        font-size: 20px;
-    }
+.modal__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modal__form-group label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.modal__form-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.modal__form-group input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+.modal__form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.modal__btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal__btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal__btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal__btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal__btn-secondary:hover {
+    background-color: #545b62;
+}
+
+/* Стили для кнопок в модальном окне удаления */
+#delete-modal .modal__content {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 20px;
+}
+
+#delete-modal button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#delete-modal button:first-child {  /* Кнопка "Удалить" */
+    background-color: #007bff;
+    color: white;
+}
+
+#delete-modal button:first-child:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+#delete-modal button:last-child {  /* Кнопка "Отменить" */
+    background-color: #6c757d;
+    color: white;
+}
+
+#delete-modal button:last-child:hover {
+    background-color: #545b62;
+    color: white;
+}
+
+#delete-modal .modal__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #000000;
+    transition: color 0.2s;
+}
+
+#delete-modal .modal__close:hover {
+    color: #ffffff;
+}
+
+/* Стили для модального окна редактирования */
+#edit-modal .modal__content {
+    padding: 20px;
+}
+
+#edit-modal .modal__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #000000;
+    transition: color 0.2s;
+}
+
+#edit-modal .modal__close:hover {
+    color: #ffffff;
+}
+
+#edit-modal .modal__btn-primary {
+    background-color: #000000;
+    color: white;
+}
+
+#edit-modal .modal__btn-primary:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+#edit-modal .modal__btn-secondary {
+    background-color: #000000;
+    color: white;
+}
+
+#edit-modal .modal__btn-secondary:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Стили для модального окна истории покупок */
+#history-modal .modal__content {
+    padding: 20px;
+}
+
+#history-modal .modal__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #000000;
+    transition: color 0.2s;
+}
+
+#history-modal .modal__close:hover {
+    color: #ffffff;
+}
+
+/* Стили для таблицы истории */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.history-table th {
+    background-color: #000000;
+    color: white;
+}
+
+.history-table tr:hover {
+    background-color: #f5f5f5;
 }

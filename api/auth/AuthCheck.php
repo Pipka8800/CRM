@@ -1,31 +1,32 @@
+<?php
 
-<?php  
-  
-//тестовый токен
-// $_SESSION['token'] = '1234561';  
-  
-function AuthCheck($successPath = '', $errorPath = '') { 
-    require_once 'api/DB.php';  
-     
-    // проверка наличия ключа token в $_SESSION
-    if (!isset($_SESSION['token'])&& $errorPath) {  
-        header("Location: $errorPath");  
-        return;  
-    } 
+function AuthCheck($successPath = '', $errorPath = '') {
+    require_once 'api/DB.php';
+    require_once 'LogoutUser.php';
 
-    //токен текущего пользователя  
-    $token = $_SESSION['token'];  
-    $adminID = $DB->query(  
-        "SELECT id FROM users WHERE token = '$token'  
-        ")->fetchAll();    
-     
-    if (empty($adminID) && $errorPath) { 
+    // Проверка наличия ключа token в $_SESSION
+    if (!isset($_SESSION['token'])) {
+
+        if ($errorPath) {
+            header("Location: $errorPath");
+        }
+
+        return;
+    }
+    // Токен текущего пользователя
+    $token = $_SESSION['token'];
+    // Получение ИД администратора по текущему токену
+    $adminID = $DB->query(
+        "SELECT id FROM users WHERE token='$token'
+    ")->fetchAll();
+    if (empty($adminID) && $errorPath) {
+        LogoutUser($errorPath, $DB);
+
         header("Location: $errorPath");
-    } 
-    if (!empty($adminID) && $successPath) { 
+    }
+    if (!empty($adminID) && $successPath) {
         header("Location: $successPath");
-    } 
-}  
- 
-  
+    }
+}
+
 ?>
