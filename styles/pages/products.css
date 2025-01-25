@@ -100,7 +100,7 @@
 .main__products th,
 .main__products td {
     padding: 12px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #ddd;
 }
 

@@ -33,7 +33,7 @@ AuthCheck('', 'login.php');
     <link rel="stylesheet" href="styles/settings.css">
     <link rel="stylesheet" href="styles/pages/clients.css">
     <link rel="stylesheet" href="styles/modules/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="styles/modules/MicroModul.css">
+    <link rel="stylesheet" href="styles/modules/micromodal.css">
     <title>CRM | Клиенты</title>
 </head>
 <body>
@@ -147,8 +147,8 @@ AuthCheck('', 'login.php');
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
             <main class="modal__content" id="modal-1-content">
-                <button>Удалить</button>
-                <button onclick="MicroModal.close('delete-modal')">Отменить</button>
+                <button class="modal__btn danger">Удалить</button>
+                <button class="modal__btn" data-micromodal-close>Отменить</button>
             </main>
           </div>
         </div>
@@ -177,8 +177,8 @@ AuthCheck('', 'login.php');
                         <input type="tel" id="phone" name="phone" required>
                     </div>
                     <div class="modal__form-actions">
-                        <button type="submit" class="modal__btn modal__btn-primary">Редактировать</button>
-                        <button type="button" class="modal__btn modal__btn-secondary" data-micromodal-close>Отменить</button>
+                        <button type="submit" class="modal__btn">Сохранить</button>
+                        <button type="button" class="modal__btn" data-micromodal-close>Отменить</button>
                     </div>
                 </form>
             </main>
