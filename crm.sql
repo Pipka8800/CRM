@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Янв 13 2025 г., 10:25
+-- Время создания: Янв 27 2025 г., 03:32
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -126,17 +126,19 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL
+  `name` varchar(255) NOT NULL,
+  `surname` varchar(256) NOT NULL,
+  `token` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `login`, `password`, `name`) VALUES
-(1, 'admin', 'admin123', 'Administrator'),
-(2, 'manager', 'manager456', 'Manager'),
-(3, 'sales', 'sales789', 'Sales Representative');
+INSERT INTO `users` (`id`, `login`, `password`, `name`, `surname`, `token`) VALUES
+(1, 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3Mzc5MDg1NDg='),
+(2, 'manager', 'manager456', 'Manager', '', ''),
+(3, 'sales', 'sales789', 'Sales Representative', '', '');
 
 --
 -- Индексы сохранённых таблиц
@@ -209,7 +211,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
