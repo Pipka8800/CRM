@@ -158,15 +158,15 @@ AuthCheck('', 'login.php');
                 <form class="modal__form">
                     <div class="modal__form-group">
                         <label for="fullname">ФИО</label>
-                        <input type="text" id="fullname" name="fullname" required>
+                        <input type="text" id="fullname" name="fullname">
                     </div>
                     <div class="modal__form-group">
                         <label for="email">Почта</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email">
                     </div>
                     <div class="modal__form-group">
                         <label for="phone">Телефон</label>
-                        <input type="tel" id="phone" name="phone" required>
+                        <input type="tel" id="phone" name="phone">
                     </div>
                     <div class="modal__form-actions">
                         <button type="submit" class="modal__btn">Сохранить</button>
@@ -220,7 +220,14 @@ AuthCheck('', 'login.php');
         </div>
     </div>
 
-    <div class="modal micromodal-slide open" id="error-modal" aria-hidden="true">
+    <div class="modal micromodal-slide
+        <?php
+        if (isset($_SESSION['clients_error']) && 
+        !empty($_SESSION['clients_error'])) {
+            echo 'open';
+        }
+        ?>
+    " id="error-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
             <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
                 <header class="modal__header">
@@ -230,7 +237,14 @@ AuthCheck('', 'login.php');
                     <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
                 </header>
                 <main class="modal__content" id="modal-1-content">
-                    <p>Текст ошибки</p>
+                <?php
+                if (isset($_SESSION['clients_error'])
+                && !empty($_SESSION['clients_error'])) {
+                    echo $_SESSION['clients_error'];
+
+                    $_SESSION['clients_error'] = '';
+                }
+                ?>
                 </main>
             </div>
         </div>
