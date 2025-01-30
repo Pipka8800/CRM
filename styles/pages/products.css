@@ -262,3 +262,8 @@
         max-width: 150px;
     }
 }
+
+.main__reset{
+    text-decoration: none;
+    color: #000000;
+}
