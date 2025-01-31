@@ -57,9 +57,12 @@ AuthCheck('', 'login.php');
                         <option value="price">По сумме</option>
                     </select>
                     <select class="main__select" name="sort" id="sort">
-                        <option value="0">По возрастанию</option>
-                        <option value="1">По убыванию</option>
+                        <option value="0">По умолчанию</option>
+                        <option value="1">По возрастанию</option>
+                        <option value="2">По убыванию</option>
                     </select>
+                    <button type="submit">Поиск</button>
+                    <a href="?" class="main__reset">Сбросить</a>
                 </form>
             </div>
         </section>
@@ -79,14 +82,28 @@ AuthCheck('', 'login.php');
                     <tbody>
                         <?php
                             require 'api/DB.php';
-                            require_once 'api/helpers/convertDate.php';
-                            require_once('api/helpers/OutputOrders.php');
 
                             $orders = $DB->query(
-                                "SELECT * FROM clients
+                          "SELECT
+                                orders.id,
+                                clients.name,
+                                orders.order_date,
+                                orders.total,
+                                GROUP_CONCAT(products.name SEPARATOR ', ') AS product_names
+                            FROM
+                                orders
+                            JOIN
+                                clients ON orders.client_id = clients.id
+                            JOIN
+                                order_items ON orders.id = order_items.order_id
+                            JOIN
+                                products ON order_items.product_id = products.id
+                            GROUP BY
+                                orders.id, clients.name, orders.order_date, orders.total;
+                                
                             ")->fetchAll();
                         
-                            OutputOrders($orders);
+                            echo json_encode($orders);
                         ?>
                     </tbody>
                 </table>

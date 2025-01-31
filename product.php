@@ -54,7 +54,7 @@ AuthCheck('', 'login.php');
             <form action="" method="GET" class="main__form">
                     <label class="main__label" for="search">Поиск по названию</label>
                     <input class="main__input" type="text" id="search" name="search" placeholder="Что-то...">
-                    <select class="main__select1" name="serach_name" id="sort1">
+                    <select class="main__select" name="serach_name" id="sort1">
                         <option value="name">Название</option>
                         <option value="price">Цена</option>
                         <option value="stock">Количество</option>
