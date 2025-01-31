@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Янв 27 2025 г., 03:32
+-- Время создания: Янв 31 2025 г., 05:17
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -88,9 +88,7 @@ CREATE TABLE `order_items` (
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
 (1, 1, 1, 2, 100.00),
-(2, 1, 2, 1, 150.50),
-(3, 2, 3, 1, 200.00),
-(4, 3, 4, 1, 250.75);
+(2, 1, 2, 1, 150.50);
 
 -- --------------------------------------------------------
 
@@ -113,8 +111,7 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`) VALUES
 (1, 'Tovar 1', 'Opisanie tovara 1', 100.00, 50),
 (2, 'Tovar 2', 'Opisanie tovara 2', 150.50, 30),
-(3, 'Tovar 3', 'Opisanie tovara 3', 200.00, 20),
-(4, 'Tovar 4', 'Opisanie tovara 4', 250.75, 10);
+(6, 'какашки', 'очень вкусные', 1500.00, 75);
 
 -- --------------------------------------------------------
 
@@ -136,7 +133,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `login`, `password`, `name`, `surname`, `token`) VALUES
-(1, 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3Mzc5MDg1NDg='),
+(1, 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3MzgyOTMwMzE='),
 (2, 'manager', 'manager456', 'Manager', '', ''),
 (3, 'sales', 'sales789', 'Sales Representative', '', '');
 
@@ -187,7 +184,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `orders`
@@ -205,7 +202,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT для таблицы `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
