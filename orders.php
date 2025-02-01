@@ -77,11 +77,14 @@ AuthCheck('', 'login.php');
                         <th>Дата заказа</th>
                         <th>Сумма</th>
                         <th>Состав заказа</th>
-                        <th>Действия</th>
+                        <th>Чек</th>
+                        <th>Редактировать</th>
+                        <th>Удалить</th>
                     </thead>
                     <tbody>
                         <?php
                             require 'api/DB.php';
+                            require_once 'api/helpers/OutputOrders.php';
 
                             $orders = $DB->query(
                           "SELECT
@@ -89,7 +92,8 @@ AuthCheck('', 'login.php');
                                 clients.name,
                                 orders.order_date,
                                 orders.total,
-                                GROUP_CONCAT(products.name SEPARATOR ', ') AS product_names
+                                GROUP_CONCAT(CONCAT(products.name,' ( ',order_items.quantity,'шт. : ',products.price,')') 
+                                SEPARATOR ', ') AS product_names
                             FROM
                                 orders
                             JOIN
@@ -100,10 +104,9 @@ AuthCheck('', 'login.php');
                                 products ON order_items.product_id = products.id
                             GROUP BY
                                 orders.id, clients.name, orders.order_date, orders.total;
-                                
                             ")->fetchAll();
                         
-                            echo json_encode($orders);
+                            OutputOrders($orders);
                         ?>
                     </tbody>
                 </table>

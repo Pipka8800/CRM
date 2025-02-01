@@ -147,7 +147,7 @@
     transition: color 0.2s ease;
 }
 
-.main__clients td i.fa-history:hover {
+.main__clients td i.fa-history:hover, td i.fa-check:hover {
     color: #2196F3;
 }
 
