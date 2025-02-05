@@ -143,7 +143,7 @@ AuthCheck('', 'login.php');
                     </div>
                     <div class="modal__form-group">
                         <label for="products">Товар</label>
-                        <select class="main__select" name="products" id="products" multiple>
+                        <select class="main__select" name="products[]" id="products" multiple>
                         <?php
                                 $products = $DB->query("SELECT id, name, price, stock FROM products WHERE stock > 0")->fetchAll();
                                 foreach ($products as $key => $product) {
