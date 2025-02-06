@@ -6,7 +6,7 @@ function OrdersSearch($params, $DB) {
     $sort = isset($params['sort']) ? $params['sort'] : '0';
     //цена и количество
     $search_name = isset($params['search_name']) ? $params['search_name'] : '0';
-
+    $search_status = isset($params['search_status']) ? $params['search_status'] : '0';
     $search = strtolower($search);
 
     $orderBy = '';
@@ -23,7 +23,8 @@ function OrdersSearch($params, $DB) {
         orders.order_date,
         orders.total,
         GROUP_CONCAT(CONCAT(products.name,' ( ',order_items.quantity,'шт. : ',products.price,')') 
-        SEPARATOR ', ') AS product_names
+        SEPARATOR ', ') AS product_names,
+        orders.status
     FROM
         orders
     JOIN
@@ -34,9 +35,8 @@ function OrdersSearch($params, $DB) {
         products ON order_items.product_id = products.id
     WHERE LOWER(clients.name) LIKE '%$search%' OR LOWER(products.name) LIKE '%$search%'
     GROUP BY
-        orders.id, clients.name, orders.order_date, orders.total
-        $orderBy
-    ")->fetchAll();
+        orders.id, clients.name, orders.order_date, orders.total, orders.status
+    " . $orderBy)->fetchAll();
 
     return $orders;
 }

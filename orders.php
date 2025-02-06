@@ -56,21 +56,37 @@ AuthCheck('', 'login.php');
                         <option value="orders.id">По ID</option>
                         <option value="orders.order_date">По дате</option>
                         <option value="orders.total">По сумме</option>
+                        <option value="orders.status">По статусу</option>
                     </select>
                     <select class="main__select" name="sort" id="sort">
                         <option value="0">По умолчанию</option>
                         <option value="1">По возрастанию</option>
                         <option value="2">По убыванию</option>
                     </select>
+                    <div class="filter-controls">
+                        <label>
+                            <input type="checkbox" name="show_inactive" 
+                                   <?php 
+                                   if (isset($_GET['show_inactive'])) {
+                                       $_SESSION['show_inactive'] = $_GET['show_inactive'];
+                                   }
+                                   echo (isset($_SESSION['show_inactive']) && $_SESSION['show_inactive']) ? 'checked' : ''; 
+                                   ?>>
+                            Показать неактивные заказы
+                        </label>
+                    </div>
                     <button type="submit">Поиск</button>
-                    <a href="?" class="main__reset">Сбросить</a>
+                    <a href="?" class="main__reset" onclick="<?php unset($_SESSION['show_inactive']); ?>">Сбросить</a>
                 </form>
             </div>
         </section>
         <section class="main__clients">
             <div class="container">
                 <h2 class="main__clients__title">Список заказов</h2>
-                <button class="main__clients__add" onclick="MicroModal.show('add-modal')"><i class="fa fa-plus-circle"></i></button>
+                <div class="main__clients__controls">
+                    <button class="main__clients__add" onclick="MicroModal.show('add-modal')"><i class="fa fa-plus-circle"></i></button>
+
+                </div>
                 <table>
                     <thead>
                         <th>ИД</th>
@@ -78,6 +94,7 @@ AuthCheck('', 'login.php');
                         <th>Дата заказа</th>
                         <th>Сумма</th>
                         <th>Состав заказа</th>
+                        <th>Статус</th>
                         <th>Чек</th>
                         <th>Редактировать</th>
                         <th>Удалить</th>
@@ -89,27 +106,6 @@ AuthCheck('', 'login.php');
                             require_once 'api/orders/OrdersSearch.php';
 
                             $orders = OrdersSearch($_GET, $DB);
-
-                        //     $orders = $DB->query(
-                        //   "SELECT
-                        //         orders.id,
-                        //         clients.name,
-                        //         orders.order_date,
-                        //         orders.total,
-                        //         GROUP_CONCAT(CONCAT(products.name,' ( ',order_items.quantity,'шт. : ',products.price,')') 
-                        //         SEPARATOR ', ') AS product_names
-                        //     FROM
-                        //         orders
-                        //     JOIN
-                        //         clients ON orders.client_id = clients.id
-                        //     JOIN
-                        //         order_items ON orders.id = order_items.order_id
-                        //     JOIN
-                        //         products ON order_items.product_id = products.id
-                        //     GROUP BY
-                        //         orders.id, clients.name, orders.order_date, orders.total;
-                        //     ")->fetchAll();
-                        
                             OutputOrders($orders);
                         ?>
                     </tbody>
