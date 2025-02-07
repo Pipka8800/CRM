@@ -13,6 +13,8 @@ require_once 'api/auth/AuthCheck.php';
 
 AuthCheck('', 'login.php');
 
+require_once 'api/helpers/InputDefaultValue.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +52,7 @@ AuthCheck('', 'login.php');
             <div class="container">
                 <form action="" class="main__form">
                     <label class="main__label" for="search">Поиск по заказу</label>
-                    <input class="main__input" type="text" id="search" name="search" placeholder="Поиск...">
+                    <input <?php InputDefaultValue('search', ''); ?> class="main__input" type="text" id="search" name="search" placeholder="Поиск...">
                     <select class="main__select" name="search_name" id="search_name">
                         <option value="client.name">По клиенту</option>
                         <option value="orders.id">По ID</option>
