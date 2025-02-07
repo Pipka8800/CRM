@@ -17,7 +17,7 @@ function ProductSearch($params, $DB) {
     }
 
     $product = $DB->query(
-        "SELECT * FROM products WHERE LOWER(name) LIKE '%$search%'$orderBy"$orderBy"
+        "SELECT * FROM products WHERE LOWER(name) LIKE '%$search%'$orderBy"
     )->fetchAll();
 
     return $product;

@@ -26,7 +26,7 @@ function OutputOrders($orders) {
         echo "<td>{$total_price}</td>";
         echo "<td>{$order_items}</td>";
         echo "<td>{$status}</td>";
-        echo "<td onclick=\"MicroModal.show('history-modal')\"><i class='fa fa-check'></i></td>";
+        echo "<td onclick=\"MicroModal.show('history-modal')\"><i class='fa fa-qrcode'></i></td>";
         echo "<td onclick=\"MicroModal.show('edit-modal')\"><i class='fa fa-pencil'></i></td>";
         echo "<td><a href='api/orders/OrdersDelete.php?id={$order['id']}'><i class='fa fa-trash'></i></a></td>";
         echo "</tr>";

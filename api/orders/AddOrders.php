@@ -4,6 +4,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formData = $_POST;
     $fields = ['client', 'products'];
     $errors = [];
+
+    if ($formData['client'] === 'new') {
+        $fields[] = 'email';
+    }
     
     $_SESSION['orders_error'] = '';
 
@@ -41,10 +45,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    $clientID = $formData['client'] === 'new' ? time() : $formData['client'];
+
+    if ($formData['client'] === 'new') {
+        $stmt = $DB->prepare("INSERT INTO clients (id, name, email, phone, birthday) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $clientID,
+            $formData['name'] ?? 'не указано',
+            $formData['email'],
+            'не указано', // значение по умолчанию для phone
+            'не указано'  // значение по умолчанию для birthday
+        ]);
+    }
+
     // 1. создание заказа с полями
     $orders = [
         'id' => time(),
-        'client_id' => $formData['client'],
+        'client_id' => $clientID,
         'total' => $total,
     ];
 

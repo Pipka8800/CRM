@@ -85,12 +85,11 @@ AuthCheck('', 'login.php');
                 <h2 class="main__clients__title">Список заказов</h2>
                 <div class="main__clients__controls">
                     <button class="main__clients__add" onclick="MicroModal.show('add-modal')"><i class="fa fa-plus-circle"></i></button>
-
                 </div>
                 <table>
                     <thead>
                         <th>ИД</th>
-                        <th>ФИО клиента</th>
+                        <th>ФИО</th>
                         <th>Дата заказа</th>
                         <th>Сумма</th>
                         <th>Состав заказа</th>
@@ -127,6 +126,7 @@ AuthCheck('', 'login.php');
                     <div class="modal__form-group">
                         <label for="client">Клиент</label>
                         <select class="main__select" name="client" id="client">
+                        <option value="new">Новый пользователь</option>
                             <?php
                                 $users = $DB->query("SELECT id, name FROM clients")->fetchAll();
                                 foreach ($users as $key => $user) {
@@ -136,6 +136,10 @@ AuthCheck('', 'login.php');
                                 }
                             ?>
                         </select>
+                    </div>
+                    <div class="modal__form-group group-email" id="email-field">
+                        <label for="email">Почта</label>
+                        <input type="email" id="email" name="email" placeholder="Введите почту....">
                     </div>
                     <div class="modal__form-group">
                         <label for="products">Товар</label>
@@ -313,5 +317,6 @@ AuthCheck('', 'login.php');
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
+    <script defer src="scripts/orders.js"></script>
 </body>
 </html>
