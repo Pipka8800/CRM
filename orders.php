@@ -54,16 +54,16 @@ require_once 'api/helpers/InputDefaultValue.php';
                     <label class="main__label" for="search">Поиск по заказу</label>
                     <input <?php InputDefaultValue('search', ''); ?> class="main__input" type="text" id="search" name="search" placeholder="Поиск...">
                     <select class="main__select" name="search_name" id="search_name">
-                        <option value="client.name">По клиенту</option>
-                        <option value="orders.id">По ID</option>
-                        <option value="orders.order_date">По дате</option>
-                        <option value="orders.total">По сумме</option>
-                        <option value="orders.status">По статусу</option>
+                        <option value="client.name" <?php echo ($_GET['search_name'] ?? '') === 'client.name' ? 'selected' : ''; ?>>По клиенту</option>
+                        <option value="orders.id" <?php echo ($_GET['search_name'] ?? '') === 'orders.id' ? 'selected' : ''; ?>>По ID</option>
+                        <option value="orders.order_date" <?php echo ($_GET['search_name'] ?? '') === 'orders.order_date' ? 'selected' : ''; ?>>По дате</option>
+                        <option value="orders.total" <?php echo ($_GET['search_name'] ?? '') === 'orders.total' ? 'selected' : ''; ?>>По сумме</option>
+                        <option value="orders.status" <?php echo ($_GET['search_name'] ?? '') === 'orders.status' ? 'selected' : ''; ?>>По статусу</option>
                     </select>
                     <select class="main__select" name="sort" id="sort">
-                        <option value="0">По умолчанию</option>
-                        <option value="1">По возрастанию</option>
-                        <option value="2">По убыванию</option>
+                        <option value="0" <?php echo ($_GET['sort'] ?? '') === '0' ? 'selected' : ''; ?>>По умолчанию</option>
+                        <option value="1" <?php echo ($_GET['sort'] ?? '') === '1' ? 'selected' : ''; ?>>По возрастанию</option>
+                        <option value="2" <?php echo ($_GET['sort'] ?? '') === '2' ? 'selected' : ''; ?>>По убыванию</option>
                     </select>
                     <div class="filter-controls">
                         <label>
@@ -93,7 +93,7 @@ require_once 'api/helpers/InputDefaultValue.php';
                         <th>ИД</th>
                         <th>ФИО</th>
                         <th>Дата заказа</th>
-                        <th>Сумма</th>
+                        <th>Общая сумма</th>
                         <th>Состав заказа</th>
                         <th>Статус</th>
                         <th>Чек</th>

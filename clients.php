@@ -52,14 +52,14 @@ require_once 'api/helpers/InputDefaultValue.php';
             <div class="container">
                 <form action="" method="GET" class="main__form">
                     <select class="main__select" name="search_name" id="search_name">
-                        <option value="name">Поиск по имени</option>
-                        <option value="email">Поиск по почте</option>
+                        <option value="name" <?php echo ($_GET['search_name'] ?? '') === 'name' ? 'selected' : ''; ?>>Поиск по имени</option>
+                        <option value="email" <?php echo ($_GET['search_name'] ?? '') === 'email' ? 'selected' : ''; ?>>Поиск по почте</option>
                     </select>
                     <input <?php InputDefaultValue('search', ''); ?> class="main__input" type="text" id="search" name="search" placeholder="Александр">
                     <select class="main__select" name="sort" id="sort">
-                        <option value="0">По умолчанию</option>
-                        <option value="1">По возрастанию</option>
-                        <option value="2">По убыванию</option>
+                        <option value="0" <?php echo ($_GET['sort'] ?? '') === '0' ? 'selected' : ''; ?>>По умолчанию</option>
+                        <option value="1" <?php echo ($_GET['sort'] ?? '') === '1' ? 'selected' : ''; ?>>По возрастанию</option>
+                        <option value="2" <?php echo ($_GET['sort'] ?? '') === '2' ? 'selected' : ''; ?>>По убыванию</option>
                     </select>
                     <button type="submit">Поиск</button>
                     <a href="?" class="main__reset">Сбросить</a>

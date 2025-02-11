@@ -34,16 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once '../DB.php';
     //ид выбранных товаров
     $products = $formData['products'];
-    //все товары из бд
-    $allProducts = $DB->query("SELECT * FROM products")->fetchAll(PDO::FETCH_ASSOC);
-    //сумма выбранных товаров
-    $total = 0;
+    
+    //получаем сумму выбранных товаров через SQL
+    $placeholders = str_repeat('?,', count($products) - 1) . '?';
+    $stmt = $DB->prepare("SELECT SUM(price) as total FROM products WHERE id IN ($placeholders)");
+    $stmt->execute($products);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $total = $result['total'];
 
-    foreach ($allProducts as $product) {
-        if (in_array($product['id'], $products)) {
-            $total += $product['price'];
-        }
-    }
+    //все товары из бд (нужны для последующего использования)
+    $allProducts = $DB->query("SELECT * FROM products")->fetchAll(PDO::FETCH_ASSOC);
 
     $clientID = $formData['client'] === 'new' ? time() : $formData['client'];
 

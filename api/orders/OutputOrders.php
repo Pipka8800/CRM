@@ -18,6 +18,7 @@ function OutputOrders($orders) {
         $order_date = $order['order_date'] ? date('Y-m-d H:i:s', strtotime($order['order_date'])) : 'Неизвестно';
         $total_price = $order['total'] ?? '0';
         $order_items = $order['product_names'] ?? 'Нет данных';
+        $id = $order['id'];
 
         echo "<tr>";
         echo "<td>{$order['id']}</td>";
@@ -26,7 +27,7 @@ function OutputOrders($orders) {
         echo "<td>{$total_price}</td>";
         echo "<td>{$order_items}</td>";
         echo "<td>{$status}</td>";
-        echo "<td onclick=\"MicroModal.show('history-modal')\"><i class='fa fa-qrcode'></i></td>";
+        echo "<td> <a href='api/orders/generateCheack.php?id=$id'><i class='fa fa-qrcode'></i></a></td>";
         echo "<td onclick=\"MicroModal.show('edit-modal')\"><i class='fa fa-pencil'></i></td>";
         echo "<td><a href='api/orders/OrdersDelete.php?id={$order['id']}'><i class='fa fa-trash'></i></a></td>";
         echo "</tr>";
