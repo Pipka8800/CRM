@@ -91,6 +91,7 @@ require_once 'api/helpers/InputDefaultValue.php';
                 <table>
                     <thead>
                         <th>ИД</th>
+                        <th>Менеджер</th>
                         <th>ФИО</th>
                         <th>Дата заказа</th>
                         <th>Общая сумма</th>

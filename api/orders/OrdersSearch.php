@@ -24,11 +24,14 @@ function OrdersSearch($params, $DB) {
         orders.total,
         GROUP_CONCAT(CONCAT(products.name,' ( ',order_items.quantity,'шт. : ',products.price,')') 
         SEPARATOR ', ') AS product_names,
-        orders.status
+        orders.status,
+        users.name AS admin_name
     FROM
         orders
     JOIN
         clients ON orders.client_id = clients.id
+    JOIN
+        users ON orders.admin = users.id
     JOIN
         order_items ON orders.id = order_items.order_id
     JOIN

@@ -3,6 +3,8 @@ function convertDate($date) {
     return date('d.m.Y', strtotime($date));
 }
 
+// добавить отображение имени администратора
+
 function OutputOrders($orders) {
     $show_inactive = isset($_GET['show_inactive']);
     
@@ -19,9 +21,11 @@ function OutputOrders($orders) {
         $total_price = $order['total'] ?? '0';
         $order_items = $order['product_names'] ?? 'Нет данных';
         $id = $order['id'];
+        $admin_name = $order['admin_name'] ?? 'Не назначен';
 
         echo "<tr>";
         echo "<td>{$order['id']}</td>";
+        echo "<td>{$admin_name}</td>";
         echo "<td>{$fullname}</td>";
         echo "<td>{$order_date}</td>";
         echo "<td>{$total_price}</td>";

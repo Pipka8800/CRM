@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($fields as $field) {
         if (!isset($formData[$field]) || empty($_POST[$field])) {
-            $errors[$field][] = 'Field is required';
+            $errors[$field][] = 'Gavno ne rabotaet';
         }
     }
 
@@ -58,20 +58,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     }
 
+    $token = $_SESSION['token'];
+    $adminID = $DB->query(
+        "SELECT id FROM users WHERE token = '$token'"
+    )->fetch(PDO::FETCH_ASSOC)[0]['id'];
+
     // 1. создание заказа с полями
     $orders = [
         'id' => time(),
         'client_id' => $clientID,
         'total' => $total,
+        'admin' => $adminID,
     ];
 
     $stmt = $DB->prepare(
-        "INSERT INTO orders (id, client_id, total) VALUES (?, ?, ?)"
-    );
+        "INSERT INTO orders (id, client_id, total, admin) VALUES (?, ?, ?, ?)");
     $stmt->execute([
         $orders['id'],
         $orders['client_id'],
         $orders['total'],
+        $orders['admin'],
     ]);
 
     // 2. Добавление элементов заказа в order_items
