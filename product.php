@@ -21,12 +21,6 @@ require_once 'api/helpers/InputDefaultValue.php';
 // header('Content-Type: '.$result->getMimeType());
 // echo $result->getString();
 
-/**
- * 1.фильрация / сортировка
- * 2.вывод продуктов
- * 3.добавление
- * 4.удаление
- */
 ?>
 
 <!DOCTYPE html>
