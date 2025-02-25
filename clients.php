@@ -211,13 +211,6 @@ require_once 'api/helpers/InputDefaultValue.php';
                                 <td>1000₽</td>
                                 <td>12.01.2024</td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Товар 2</td>
-                                <td>1</td>
-                                <td>500₽</td>
-                                <td>15.01.2024</td>
-                            </tr>
                         </tbody>
                     </table>
                 </main>
