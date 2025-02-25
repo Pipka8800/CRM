@@ -77,7 +77,6 @@ require_once 'api/helpers/InputDefaultValue.php';
                         <th>Почта</th>
                         <th>Телефон</th>
                         <th>День рождения</th>
-                        <th>Дата создания</th>
                         <th>История заказов</th>
                         <th>Редактировать</th>
                         <th>Удалить</th>

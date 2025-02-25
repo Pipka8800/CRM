@@ -24,90 +24,131 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         exit;
     }
 
-    // Получаем данные о клиенте
+    $history = [
+        'user' => '',
+        'orders' => []
+    ];
+
+    // Получаем информацию о клиенте
     $clientQuery = "SELECT name FROM clients WHERE id = ?";
-    $stmt = $DB->prepare($clientQuery);
-    $stmt->execute([$clientID]);
-    $clientData = $stmt->fetch(PDO::FETCH_ASSOC);
+    $clientStmt = $DB->prepare($clientQuery);
+    $clientStmt->execute([$clientID]);
+    $client = $clientStmt->fetch(PDO::FETCH_ASSOC);
 
-    // Получаем историю заказов клиента с учетом дат
-    $ordersQuery = "SELECT o.id, o.total, oi.quantity, oi.price, p.name as product_name
-                    FROM orders o
-                    JOIN order_items oi ON o.id = oi.order_id
-                    JOIN products p ON oi.product_id = p.id
-                    WHERE o.client_id = ? AND o.order_date BETWEEN ? AND ?
-                    ORDER BY o.order_date DESC";
-
-    $stmt = $DB->prepare($ordersQuery);
-    $stmt->execute([$clientID, $dateFROM, $dateTO]);
-    $orderHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    function GetClientName($clientId, $DB) {
-        $stmt = $DB->prepare("SELECT fullname FROM clients WHERE id = ?");
-        $stmt->execute([$clientId]);
-        return $stmt->fetchColumn();
+    if ($client) {
+        $history['user'] = $client['name']; // Сохраняем ФИО пользователя
     }
 
-    function GetClientOrders($clientId, $DB) {
-    $query = "SELECT 
-        o.id as order_id,
-        p.name as product_name,
-        o.quantity,
-        o.price,
-        o.created_at
-    FROM orders o
-    JOIN products p ON o.product_id = p.id
-    WHERE o.client_id = ?
-    ORDER BY o.created_at DESC";
-    
+    // Добавляем запрос для получения заказов по ID клиента
+    $query = "SELECT * FROM orders WHERE client_id = ?";
     $stmt = $DB->prepare($query);
-    $stmt->execute([$clientId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    $stmt->execute([$clientID]);
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Формируем HTML для PDF
-    $html = '
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <style>
-            body { font-family: DejaVu Sans, sans-serif; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .client-info { margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h2>История заказов клиента</h2>
-            <p>Период: ' . $dateFROM . ' - ' . $dateTO . '</p>
-        </div>
-        <div class="client-info">
-            <p>Клиент: ' . $clientData['name'] . '</p>
-        </div>
-        <table>
-            <tr>
-                <th>ID заказа</th>
-                <th>Товар</th>
-                <th>Количество</th>
-                <th>Цена</th>
-                <th>Сумма</th>
-            </tr>';
+    // Проверяем, есть ли заказы у клиента
+    if (empty($orders)) {
+        // HTML для клиента без заказов
+        $html = '
+        <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <style>
+                body { font-family: DejaVu Sans, sans-serif; }
+                .header { text-align: center; margin-bottom: 20px; }
+                .message { text-align: center; font-size: 18px; margin-top: 50px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>История заказов клиента</h2>
+                <p>Период: ' . ((!empty($dateFROM) && !empty($dateTO)) ? $dateFROM . ' - ' . $dateTO : 'Все время') . '</p>
+            </div>
+            <div class="client-info">
+                <p>Клиент: ' . $history['user'] . '</p>
+            </div>
+            <div class="message">
+                <p>Данный клиент ещё ничего не заказывал</p>
+            </div>
+        </body>
+        </html>';
+    } else {
+        foreach ($orders as $order) {
+            // Запрос для получения элементов заказа с названиями продуктов
+            $itemsQuery = "SELECT oi.*, p.name as product_name 
+                         FROM order_items oi 
+                         JOIN products p ON oi.product_id = p.id 
+                         WHERE oi.order_id = ?";
+            $itemsStmt = $DB->prepare($itemsQuery);
+            $itemsStmt->execute([$order['id']]);
+            $items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($orderHistory as $item) {
-        $html .= '<tr>
-            <td>' . $item['id'] . '</td>
-            <td>' . $item['product_name'] . '</td>
-            <td>' . $item['quantity'] . '</td>
-            <td>' . $item['price'] . ' руб.</td>
-            <td>' . ($item['quantity'] * $item['price']) . ' руб.</td>
-        </tr>';
+            $history['orders'][] = [
+                "id" => $order['id'],
+                "date" => $order['order_date'],
+                "total" => $order['total'],
+                "items" => $items
+            ];
+        }
+        
+        // Добавляем код для генерации чека
+        $data = [
+            "clientID" => $clientID,
+            "orderDate" => (!empty($dateFROM) && !empty($dateTO)) ? $dateFROM . ' - ' . $dateTO : 'Все время', // если данные не выбраны, выводим "Все время"
+            "orders" => $history['orders']
+        ];
+
+        // После формирования $data, создаем HTML для PDF
+        $html = '
+        <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <style>
+                body { font-family: DejaVu Sans, sans-serif; }
+                .header { text-align: center; margin-bottom: 20px; }
+                .client-info { margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>История заказов клиента</h2>
+                <p>Период: ' . $data['orderDate'] . '</p>
+            </div>
+            <div class="client-info">
+                <p>Клиент: ' . $history['user'] . '</p>
+            </div>';
+
+        foreach ($data['orders'] as $order) {
+            $html .= '
+            <h3>Заказ №' . $order['id'] . ' от ' . $order['date'] . '</h3>
+            <table>
+                <tr>
+                    <th>Наименование</th>
+                    <th>Количество</th>
+                    <th>Сумма</th>
+                </tr>';
+            
+            foreach ($order['items'] as $item) {
+                $html .= '<tr>
+                    <td>' . $item['product_name'] . '</td>
+                    <td>' . $item['quantity'] . '</td>
+                    <td>' . $item['price'] . ' руб.</td>
+                </tr>';
+            }
+            
+            $html .= '
+                <tr>
+                    <td colspan="2" style="text-align: right;"><strong>Итого:</strong></td>
+                    <td><strong>' . $order['total'] . ' руб.</strong></td>
+                </tr>
+            </table>';
+        }
+        
+        $html .= '</body></html>';
     }
 
-    $html .= '</table></body></html>';
-
-    // Генерируем PDF
+    // Инициализация Dompdf
     $options = new Options();
     $options->set('isHtml5ParserEnabled', true);
     $options->set('isPhpEnabled', true);
@@ -117,10 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
-
-    // Отправляем PDF
+    
+    // Отправляем PDF в браузер
     header('Content-Type: application/pdf');
-    header('Content-Disposition: attachment; filename="История_заказов_' . $clientData['name'] . '.pdf"');
+    header('Content-Disposition: attachment; filename="История_Клиента_' . $clientID . '.pdf"');
     echo $dompdf->output();
     exit();
 }

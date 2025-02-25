@@ -79,7 +79,6 @@ function OutputClients($clients) {
                         <button type='submit' class='date-submit-btn'>Сформировать</button>
                     </form>
                 </td>
-                <td onclick=\"MicroModal.show('history-modal')\"><i class='fa fa-history'></i></td>
                 <td onclick=\"MicroModal.show('edit-modal')\"><i class='fa fa-pencil'></i></td>
                 <td><a href='api/clients/ClientsDelete.php?id=$id'><i class='fa fa-trash'></i></a></td>
             </tr>";
