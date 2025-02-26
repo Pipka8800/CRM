@@ -16,6 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $dateFrom = new DateTime($dateFROM);
     $dateTo = new DateTime($dateTO);
 
+    // Проверяем, является ли это одним и тем же днем
+    $isOneDay = $dateFrom->format('Y-m-d') === $dateTo->format('Y-m-d');
+
     // Проверяем корректность дат
     if ($dateFrom > $dateTo) {
         session_start();
@@ -41,8 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     // Добавляем запрос для получения заказов по ID клиента
     $query = "SELECT * FROM orders WHERE client_id = ?";
+    if (!empty($dateFROM) && !empty($dateTO)) {
+        if ($isOneDay) {
+            $query .= " AND DATE(order_date) = DATE(?)";
+        } else {
+            $query .= " AND order_date BETWEEN ? AND ?";
+        }
+    }
     $stmt = $DB->prepare($query);
-    $stmt->execute([$clientID]);
+    
+    if (!empty($dateFROM) && !empty($dateTO)) {
+        if ($isOneDay) {
+            $stmt->execute([$clientID, $dateFROM]);
+        } else {
+            $stmt->execute([$clientID, $dateFROM, $dateTO]);
+        }
+    } else {
+        $stmt->execute([$clientID]);
+    }
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Проверяем, есть ли заказы у клиента
@@ -86,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
                 "id" => $order['id'],
                 "date" => $order['order_date'],
                 "total" => $order['total'],
+                "status" => $order['status'],
                 "items" => $items
             ];
         }
@@ -93,7 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         // Добавляем код для генерации чека
         $data = [
             "clientID" => $clientID,
-            "orderDate" => (!empty($dateFROM) && !empty($dateTO)) ? $dateFROM . ' - ' . $dateTO : 'Все время', // если данные не выбраны, выводим "Все время"
+            "orderDate" => (!empty($dateFROM) && !empty($dateTO)) ? 
+                ($isOneDay ? date('Y-m-d', strtotime($dateFROM)) : $dateFROM . ' - ' . $dateTO) : 
+                'Все время',
             "orders" => $history['orders']
         ];
 
@@ -126,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
                 <tr>
                     <th>Наименование</th>
                     <th>Количество</th>
+                    <th>Статус</th>
                     <th>Сумма</th>
                 </tr>';
             
@@ -133,13 +156,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
                 $html .= '<tr>
                     <td>' . $item['product_name'] . '</td>
                     <td>' . $item['quantity'] . '</td>
+                    <td>' . ($order['status'] == 1 ? 'Активен' : 'Архив') . '</td>
                     <td>' . $item['price'] . ' руб.</td>
                 </tr>';
             }
             
             $html .= '
                 <tr>
-                    <td colspan="2" style="text-align: right;"><strong>Итого:</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>Итого:</strong></td>
                     <td><strong>' . $order['total'] . ' руб.</strong></td>
                 </tr>
             </table>';
