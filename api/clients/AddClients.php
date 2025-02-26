@@ -37,21 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Очистка всех полей формы
     foreach ($formData as $key => $value) {
         $formData[$key] = cleanData($value);
-        echo json_encode($formData);
     }
 
     $phone = $formData['phone'];
+    $email = $formData['email'];
     
     // Подключение к базе данных
     require_once '../DB.php';
     
-    // Проверка существования клиента по номеру телефона
+    // Проверка существования клиента по номеру телефона или email
     $existingClient = $DB->query(
-        "SELECT id FROM clients WHERE phone='$phone'"
+        "SELECT id FROM clients WHERE phone='$phone' OR email='$email'"
     )->fetchAll();
 
     if (!empty($existingClient)) {
-        $_SESSION['clients_error'] = 'Клиент с таким номером телефона уже существует';
+        $_SESSION['clients_error'] = 'Клиент с таким номером телефона или email уже существует';
         header('Location: ../../clients.php');
         exit;
     }

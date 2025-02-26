@@ -70,6 +70,51 @@ require_once 'api/helpers/InputDefaultValue.php';
             <div class="container">
                 <h2 class="main__clients__title">Список клиентов</h2>
                 <button class="main__clients__add" onclick="MicroModal.show('add-modal')"><i class="fa fa-plus-circle"></i></button>
+                <?php
+                    $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                    $maxClients = 5;
+
+                    $countClients = $DB->query("
+                    SELECT COUNT(*) as count FROM clients")
+                    ->fetchAll()[0]['count'];
+
+                    $maxPage = ceil($countClients / $maxClients);
+                    $minPage = 1;
+
+                    //2. попровать баг с перезаписью параметров поиска при перелистывании страниц
+
+                    // нормализация currentPage
+                    if ($currentPage < $minPage || !is_numeric($currentPage)) {
+                        $currentPage = $minPage;
+                        header("Location: ?page=$currentPage");
+                        exit;
+                    }
+                    if ($currentPage > $maxPage) {
+                        $currentPage = $maxPage;
+                        header("Location: ?page=$currentPage");
+                        exit;
+                    }
+
+                    echo "<p>$currentPage / $maxPage</p>";
+
+                    // Сохраняем параметры поиска и сортировки
+                    $searchParams = [];
+                    if (isset($_GET['search_name'])) $searchParams[] = "search_name=" . urlencode($_GET['search_name']);
+                    if (isset($_GET['search'])) $searchParams[] = "search=" . urlencode($_GET['search']);
+                    if (isset($_GET['sort'])) $searchParams[] = "sort=" . urlencode($_GET['sort']);
+                    $queryString = implode('&', $searchParams);
+                    $queryString = $queryString ? '&' . $queryString : '';
+
+                    // Кнопка назад
+                    $prev = max(1, $currentPage - 1);
+                    $prevDisabled = $currentPage <= 1 ? 'disabled' : '';
+                    echo "<a href='?page=$prev$queryString' class='pagination-btn $prevDisabled'><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
+
+                    // Кнопка вперед
+                    $next = min($maxPage, $currentPage + 1);
+                    $nextDisabled = $currentPage >= $maxPage ? 'disabled' : '';
+                    echo "<a href='?page=$next$queryString' class='pagination-btn $nextDisabled'><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+                ?>
                 <table>
                     <thead>
                         <th>ИД</th>
