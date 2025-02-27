@@ -95,7 +95,8 @@ require_once 'api/helpers/InputDefaultValue.php';
                         exit;
                     }
 
-                    echo "<p>$currentPage / $maxPage</p>";
+                    echo "<div class='pagination'>";
+                    // echo "<p class='pagination__info'>$currentPage / $maxPage</p>";
 
                     // Сохраняем параметры поиска и сортировки
                     $searchParams = [];
@@ -108,12 +109,20 @@ require_once 'api/helpers/InputDefaultValue.php';
                     // Кнопка назад
                     $prev = max(1, $currentPage - 1);
                     $prevDisabled = $currentPage <= 1 ? 'disabled' : '';
-                    echo "<a href='?page=$prev$queryString' class='pagination-btn $prevDisabled'><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
+                    echo "<a href='?page=$prev$queryString' class='pagination__btn $prevDisabled'><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
+
+                    echo "<div class='pagination__numbers'>";
+                    for ($i = 1; $i <= $maxPage; $i++) {
+                        $activeClass = $i === $currentPage ? 'active' : '';
+                        echo "<a href='?page=$i$queryString' class='pagination__number $activeClass'>$i</a>";
+                    }
+                    echo "</div>";
 
                     // Кнопка вперед
                     $next = min($maxPage, $currentPage + 1);
                     $nextDisabled = $currentPage >= $maxPage ? 'disabled' : '';
-                    echo "<a href='?page=$next$queryString' class='pagination-btn $nextDisabled'><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+                    echo "<a href='?page=$next$queryString' class='pagination__btn $nextDisabled'><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+                    echo "</div>";
                 ?>
                 <table>
                     <thead>

@@ -16,8 +16,12 @@ function ProductSearch($params, $DB) {
         $orderBy = "ORDER BY $search_name DESC";
     }
 
+    $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $maxProducts = 5;
+    $offset = ($currentPage - 1) * $maxProducts;
+
     $product = $DB->query(
-        "SELECT * FROM products WHERE LOWER(name) LIKE '%$search%'$orderBy"
+        "SELECT * FROM products WHERE LOWER(name) LIKE '%$search%'$orderBy LIMIT $maxProducts OFFSET $offset"
     )->fetchAll();
 
     return $product;

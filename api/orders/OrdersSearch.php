@@ -16,6 +16,10 @@ function OrdersSearch($params, $DB) {
         $orderBy = "ORDER BY $search_name DESC";
     }
 
+    $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $maxOrders = 5;
+    $offset = ($currentPage - 1) * $maxOrders;
+
     $orders = $DB->query(
     "SELECT
         orders.id,
@@ -39,7 +43,7 @@ function OrdersSearch($params, $DB) {
     WHERE LOWER(clients.name) LIKE '%$search%' OR LOWER(products.name) LIKE '%$search%'
     GROUP BY
         orders.id, clients.name, orders.order_date, orders.total, orders.status
-    " . $orderBy)->fetchAll();
+    " . $orderBy . " LIMIT $maxOrders OFFSET $offset")->fetchAll();
 
     return $orders;
 }
