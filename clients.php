@@ -10,10 +10,10 @@ if (isset($_GET['do']) && $_GET['do'] === 'logout') {
 }
 
 require_once 'api/auth/AuthCheck.php';
+require_once 'api/helpers/InputDefaultValue.php';
+require_once 'api/clients/ClientsSearch.php';
 
 AuthCheck('', 'login.php');
-
-require_once 'api/helpers/InputDefaultValue.php';
 
 ?>
 
@@ -81,48 +81,52 @@ require_once 'api/helpers/InputDefaultValue.php';
                     $maxPage = ceil($countClients / $maxClients);
                     $minPage = 1;
 
-                    //2. попровать баг с перезаписью параметров поиска при перелистывании страниц
+                    // Build pagination URL with preserved search parameters
+                    $searchParams = '';
+                    if (isset($_GET['search_name'])) {
+                        $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
+                    }
+                    if (isset($_GET['search'])) {
+                        $searchParams .= '&search=' . urlencode($_GET['search']);
+                    }
+                    if (isset($_GET['sort'])) {
+                        $searchParams .= '&sort=' . urlencode($_GET['sort']);
+                    }
 
-                    // нормализация currentPage
+                    // Normalize currentPage
                     if ($currentPage < $minPage || !is_numeric($currentPage)) {
                         $currentPage = $minPage;
-                        header("Location: ?page=$currentPage");
+                        header("Location: ?page=$currentPage" . $searchParams);
                         exit;
                     }
                     if ($currentPage > $maxPage) {
                         $currentPage = $maxPage;
-                        header("Location: ?page=$currentPage");
+                        header("Location: ?page=$currentPage" . $searchParams);
                         exit;
                     }
+                    
+                    // Wrap pagination in container
+                    echo "<div class='pagination-container'>";
+                    
+                    // Always show prev button, but disable if on first page
+                    $prevDisabled = ($currentPage <= $minPage) ? " disabled" : "";
+                    $Prev = $currentPage - 1;
+                    echo "<a href='?page=$Prev" . $searchParams . "'$prevDisabled><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
 
+                    // Show numbered pagination buttons
                     echo "<div class='pagination'>";
-                    // echo "<p class='pagination__info'>$currentPage / $maxPage</p>";
-
-                    // Сохраняем параметры поиска и сортировки
-                    $searchParams = [];
-                    if (isset($_GET['search_name'])) $searchParams[] = "search_name=" . urlencode($_GET['search_name']);
-                    if (isset($_GET['search'])) $searchParams[] = "search=" . urlencode($_GET['search']);
-                    if (isset($_GET['sort'])) $searchParams[] = "sort=" . urlencode($_GET['sort']);
-                    $queryString = implode('&', $searchParams);
-                    $queryString = $queryString ? '&' . $queryString : '';
-
-                    // Кнопка назад
-                    $prev = max(1, $currentPage - 1);
-                    $prevDisabled = $currentPage <= 1 ? 'disabled' : '';
-                    echo "<a href='?page=$prev$queryString' class='pagination__btn $prevDisabled'><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
-
-                    echo "<div class='pagination__numbers'>";
                     for ($i = 1; $i <= $maxPage; $i++) {
-                        $activeClass = $i === $currentPage ? 'active' : '';
-                        echo "<a href='?page=$i$queryString' class='pagination__number $activeClass'>$i</a>";
+                        $activeClass = ($i === $currentPage) ? " class='active'" : "";
+                        echo "<a href='?page=$i" . $searchParams . "'$activeClass>$i</a>";
                     }
                     echo "</div>";
 
-                    // Кнопка вперед
-                    $next = min($maxPage, $currentPage + 1);
-                    $nextDisabled = $currentPage >= $maxPage ? 'disabled' : '';
-                    echo "<a href='?page=$next$queryString' class='pagination__btn $nextDisabled'><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
-                    echo "</div>";
+                    // Always show next button, but disable if on last page
+                    $nextDisabled = ($currentPage >= $maxPage) ? " disabled" : "";
+                    $Next = $currentPage + 1;
+                    echo "<a href='?page=$Next" . $searchParams . "'$nextDisabled><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+
+                    echo "</div>"; // Close pagination-container
                 ?>
                 <table>
                     <thead>
@@ -131,6 +135,7 @@ require_once 'api/helpers/InputDefaultValue.php';
                         <th>Почта</th>
                         <th>Телефон</th>
                         <th>День рождения</th>
+                        <th>Дата создания</th>
                         <th>История заказов</th>
                         <th>Редактировать</th>
                         <th>Удалить</th>
@@ -264,43 +269,85 @@ require_once 'api/helpers/InputDefaultValue.php';
                                 <td>1000₽</td>
                                 <td>12.01.2024</td>
                             </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Товар 2</td>
+                                <td>1</td>
+                                <td>500₽</td>
+                                <td>15.01.2024</td>
+                            </tr>
                         </tbody>
                     </table>
                 </main>
             </div>
         </div>
     </div>
-
-    <div class="modal micromodal-slide
-        <?php
-        if (isset($_SESSION['clients_error']) && 
-        !empty($_SESSION['clients_error'])) {
-            echo 'open';
-        }
-        ?>
-    " id="error-modal" aria-hidden="true">
+    <div class="modal micromodal-slide<?php
+        if (isset($_GET['send-email']) && !empty($_GET['send-email'])) {echo ' open';}?>
+    " id="send-email-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
             <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
                 <header class="modal__header">
                     <h2 class="modal__title" id="modal-1-title">
-                        Ошибка!
+                        Отправка письма
                     </h2>   
                     <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
                 </header>
                 <main class="modal__content" id="modal-1-content">
-                <?php
-                if (isset($_SESSION['clients_error'])
-                && !empty($_SESSION['clients_error'])) {
-                    echo $_SESSION['clients_error'];
+                    <form action="api/clients/SendEmail.php?email=<?php echo $_GET['send-email']; ?>" method="POST">
+                        <div class="modal__form-group">
+                            <label for="header">Обращение</label>
+                            <input type="text" id="header" name="header" value="Дорогие коллеги!">
+                        </div>
+                        <div class="modal__form-group">
+                            <label for="main">Тело письма</label>
+                            <textarea id="main" name="main" rows="5">Компания «Сибирский гостинец» - это российский производитель натуральных продуктов из экологически чистого сырья. Мы перерабатываем и реализуем дикорастущие лесные ягоды с применением инновационных технологий сублимации, а также выпускаем снековую продукцию (кедровый орех и сушеные грибы).
 
-                    $_SESSION['clients_error'] = '';
-                }
-                ?>
+Мы работаем с 2012 года, но уже наладили взаимовыгодные партнёрские отношения с крупными российскими торговыми сетями: «Азбука Вкуса», «Бахетле», «Звездный», «Лэнд», «Табрис» и другие. Нас ценят за высокое качество продукта и строгое соблюдение сроков. А мы ценим своих партнеров и всегда рады новым!
+
+Больше полезной информации о нашей компании и продукте вы найдете в презентации во вложении (либо по <a href="#">ссылке</a>).</textarea>
+                        </div>
+                        <div class="modal__form-group">
+                            <label for="footer">Футер</label>
+                            <input type="text" id="footer" name="footer" value="(3462) 77-40-59<br>
+<a href='mailto:info@ws-trade.ru' style='color: blue; text-decoration: underline;'>info@ws-trade.ru</a><br>
+<a href='https://сибирскийгостинец.рф' style='color: blue; text-decoration: underline;'>сибирскийгостинец.рф</a><br>
+628406, РФ, ХМАО-Югра,<br>
+г. Сургут, ул. Университетская, 4">
+                        </div>
+                        <div class="modal__form-actions">
+                            <button type="submit" class="modal__btn modal__btn-primary">Отправить</button>
+                            <button type="button" class="modal__btn modal__btn-secondary" data-micromodal-close>Отменить</button>
+                        </div>
+                    </form>
+
+                    <?php 
+                    if (isset($_GET['send-email']) && !empty($_GET['send-email'])) {
+                        
+                    }
+                    ?>
                 </main>
             </div>
         </div>
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
+    <script>
+    // Очищаем URL от параметра send-email при закрытии модального окна
+    document.querySelector('#send-email-modal .modal__close').addEventListener('click', function() {
+        let url = new URL(window.location.href);
+        url.searchParams.delete('send-email');
+        window.history.replaceState({}, '', url);
+    });
+
+    // Если модальное окно было открыто, очищаем URL после загрузки страницы
+    window.addEventListener('load', function() {
+        if (new URL(window.location.href).searchParams.has('send-email')) {
+            let url = new URL(window.location.href);
+            url.searchParams.delete('send-email');
+            window.history.replaceState({}, '', url);
+        }
+    });
+    </script>
 </body>
 </html>

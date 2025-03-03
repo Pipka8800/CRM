@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         </div>
         <div class="order-info">
             <p>Клиент: ' . $orderData['clientName'] . '</p>
-            <p>Менеджер: ' . $orderData['adminName'] . '</p>
+            <p>Администратор: ' . $orderData['adminName'] . '</p>
         </div>
         <table>
             <tr>

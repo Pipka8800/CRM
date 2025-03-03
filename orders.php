@@ -15,6 +15,35 @@ AuthCheck('', 'login.php');
 
 require_once 'api/helpers/InputDefaultValue.php';
 
+// Обработка состояния статуса заказов
+if (isset($_GET["search_status"])) {
+    $_SESSION["search_status"] = $_GET["search_status"];
+} else if (!isset($_SESSION["search_status"])) {
+    $_SESSION["search_status"] = "all"; // По умолчанию показываем все заказы
+}
+
+// Обработка кнопки сброса
+if (isset($_GET['reset'])) {
+    $_SESSION["search_status"] = "all"; // По умолчанию показываем все заказы
+    header("Location: orders.php");
+    exit;
+}
+
+// Добавляем параметры в URL пагинации
+$searchParams = '';
+if (isset($_GET['search_name'])) {
+    $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
+}
+if (isset($_GET['search'])) {
+    $searchParams .= '&search=' . urlencode($_GET['search']);
+}
+if (isset($_GET['sort'])) {
+    $searchParams .= '&sort=' . urlencode($_GET['sort']);
+}
+if (isset($_SESSION['search_status'])) {
+    $searchParams .= '&search_status=' . urlencode($_SESSION['search_status']);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -67,13 +96,15 @@ require_once 'api/helpers/InputDefaultValue.php';
                     </select>
                     <div class="filter-controls">
                         <label>
-                            <input type="checkbox" name="show_inactive" 
-                                   <?php echo (isset($_GET['show_inactive']) && $_GET['show_inactive']) ? 'checked' : ''; ?>>
-                            Показать неактивные заказы
+                            <select class="main__select" name="search_status" id="search_status">
+                                <option value="all" <?php echo ($_SESSION["search_status"] === "all" ? "selected" : ""); ?>>Все заказы</option>
+                                <option value="1" <?php echo ($_SESSION["search_status"] === "1" ? "selected" : ""); ?>>Активные заказы</option>
+                                <option value="0" <?php echo ($_SESSION["search_status"] === "0" ? "selected" : ""); ?>>Неактивные заказы</option>
+                            </select>
                         </label>
                     </div>
                     <button type="submit">Поиск</button>
-                    <a href="?" class="main__reset">Сбросить</a>
+                    <a href="?" class="main__reset" onclick="' . session_unset() . '">Сбросить</a>
                 </form>
             </div>
         </section>
@@ -83,61 +114,6 @@ require_once 'api/helpers/InputDefaultValue.php';
                 <div class="main__clients__controls">
                     <button class="main__clients__add" onclick="MicroModal.show('add-modal')"><i class="fa fa-plus-circle"></i></button>
                 </div>
-                <?php
-                    $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                    $maxClients = 5;
-
-                    $countClients = $DB->query("
-                    SELECT COUNT(*) as count FROM clients")
-                    ->fetchAll()[0]['count'];
-
-                    $maxPage = ceil($countClients / $maxClients);
-                    $minPage = 1;
-
-                    //2. попровать баг с перезаписью параметров поиска при перелистывании страниц
-
-                    // нормализация currentPage
-                    if ($currentPage < $minPage || !is_numeric($currentPage)) {
-                        $currentPage = $minPage;
-                        header("Location: ?page=$currentPage");
-                        exit;
-                    }
-                    if ($currentPage > $maxPage) {
-                        $currentPage = $maxPage;
-                        header("Location: ?page=$currentPage");
-                        exit;
-                    }
-
-                    echo "<div class='pagination'>";
-                    // echo "<p class='pagination__info'>$currentPage / $maxPage</p>";
-
-                    // Сохраняем параметры поиска и сортировки
-                    $searchParams = [];
-                    if (isset($_GET['search_name'])) $searchParams[] = "search_name=" . urlencode($_GET['search_name']);
-                    if (isset($_GET['search'])) $searchParams[] = "search=" . urlencode($_GET['search']);
-                    if (isset($_GET['sort'])) $searchParams[] = "sort=" . urlencode($_GET['sort']);
-                    if (isset($_GET['show_inactive'])) $searchParams[] = "show_inactive=" . urlencode($_GET['show_inactive']);
-                    $queryString = implode('&', $searchParams);
-                    $queryString = $queryString ? '&' . $queryString : '';
-
-                    // Кнопка назад
-                    $prev = max(1, $currentPage - 1);
-                    $prevDisabled = $currentPage <= 1 ? 'disabled' : '';
-                    echo "<a href='?page=$prev$queryString' class='pagination__btn $prevDisabled'><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
-
-                    echo "<div class='pagination__numbers'>";
-                    for ($i = 1; $i <= $maxPage; $i++) {
-                        $activeClass = $i === $currentPage ? 'active' : '';
-                        echo "<a href='?page=$i$queryString' class='pagination__number $activeClass'>$i</a>";
-                    }
-                    echo "</div>";
-
-                    // Кнопка вперед
-                    $next = min($maxPage, $currentPage + 1);
-                    $nextDisabled = $currentPage >= $maxPage ? 'disabled' : '';
-                    echo "<a href='?page=$next$queryString' class='pagination__btn $nextDisabled'><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
-                    echo "</div>";
-                ?>
                 <table>
                     <thead>
                         <th>ИД</th>
@@ -156,6 +132,75 @@ require_once 'api/helpers/InputDefaultValue.php';
                             require 'api/DB.php';
                             require_once 'api/orders/OutputOrders.php';
                             require_once 'api/orders/OrdersSearch.php';
+
+                            // Подсчет общего количества записей с учетом фильтров
+                            $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
+                            $whereClause = "";
+                            if (!empty($search)) {
+                                $whereClause = "WHERE (LOWER(clients.name) LIKE '%$search%' OR LOWER(products.name) LIKE '%$search%')";
+                            }
+
+                            // Добавляем условие статуса для подсчета
+                            if ($_SESSION["search_status"] == '1') {
+                                $whereClause = $whereClause ? $whereClause . " AND orders.status = '1'" : "WHERE orders.status = 1";
+                            } elseif ($_SESSION["search_status"] == '0') {
+                                $whereClause = $whereClause ? $whereClause . " AND orders.status = '0'" : "WHERE orders.status = 0";
+                            }
+
+                            $countQuery = "SELECT COUNT(DISTINCT orders.id) as count 
+                                           FROM orders 
+                                           JOIN clients ON orders.client_id = clients.id 
+                                           JOIN order_items ON orders.id = order_items.order_id 
+                                           JOIN products ON order_items.product_id = products.id 
+                                           $whereClause";
+
+                            $countOrders = $DB->query($countQuery)->fetchAll()[0]['count'];
+
+                            $per_page = 5; // Количество записей на странице
+                            $maxPage = ceil($countOrders / $per_page);
+                            $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+                            // Проверка и корректировка текущей страницы
+                            if ($currentPage < 1) {
+                                $currentPage = 1;
+                            } elseif ($currentPage > $maxPage) {
+                                $currentPage = $maxPage;
+                            }
+
+                            // Build pagination URL with preserved search parameters
+                            $searchParams = '';
+                            if (isset($_GET['search_name'])) {
+                                $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
+                            }
+                            if (isset($_GET['search'])) {
+                                $searchParams .= '&search=' . urlencode($_GET['search']);
+                            }
+                            if (isset($_GET['sort'])) {
+                                $searchParams .= '&sort=' . urlencode($_GET['sort']);
+                            }
+
+                            // Wrap pagination in container
+                            echo "<div class='pagination-container'>";
+                            
+                            // Кнопка "Предыдущая"
+                            $prevDisabled = ($currentPage <= 1) ? " disabled" : "";
+                            $prevPage = $currentPage - 1;
+                            echo "<a href='?page=$prevPage$searchParams'$prevDisabled><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
+
+                            // Номера страниц
+                            echo "<div class='pagination'>";
+                            for ($i = 1; $i <= $maxPage; $i++) {
+                                $activeClass = ($i === $currentPage) ? " class='active'" : "";
+                                echo "<a href='?page=$i$searchParams'$activeClass>$i</a>";
+                            }
+                            echo "</div>";
+
+                            // Кнопка "Следующая"
+                            $nextDisabled = ($currentPage >= $maxPage) ? " disabled" : "";
+                            $nextPage = $currentPage + 1;
+                            echo "<a href='?page=$nextPage$searchParams'$nextDisabled><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+
+                            echo "</div>";
 
                             $orders = OrdersSearch($_GET, $DB);
                             OutputOrders($orders);

@@ -15,9 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     // Преобразуем строки в объекты DateTime для корректного сравнения
     $dateFrom = new DateTime($dateFROM);
     $dateTo = new DateTime($dateTO);
+    
+    // Если выбран один день, устанавливаем конец дня для dateTO
+    if ($dateFROM === $dateTO) {
+        $dateTo->setTime(23, 59, 59);
+    }
 
-    // Проверяем, является ли это одним и тем же днем
-    $isOneDay = $dateFrom->format('Y-m-d') === $dateTo->format('Y-m-d');
+    // Форматируем даты для SQL запроса
+    $dateFromSQL = $dateFrom->format('Y-m-d H:i:s');
+    $dateToSQL = $dateTo->format('Y-m-d H:i:s');
 
     // Проверяем корректность дат
     if ($dateFrom > $dateTo) {
@@ -27,152 +33,163 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         exit;
     }
 
-    $history = [
-        'user' => '',
-        'orders' => []
-    ];
-
-    // Получаем информацию о клиенте
+    // Получаем данные о клиенте
     $clientQuery = "SELECT name FROM clients WHERE id = ?";
-    $clientStmt = $DB->prepare($clientQuery);
-    $clientStmt->execute([$clientID]);
-    $client = $clientStmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $DB->prepare($clientQuery);
+    $stmt->execute([$clientID]);
+    $clientData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($client) {
-        $history['user'] = $client['name']; // Сохраняем ФИО пользователя
-    }
-
-    // Добавляем запрос для получения заказов по ID клиента
-    $query = "SELECT * FROM orders WHERE client_id = ?";
-    if (!empty($dateFROM) && !empty($dateTO)) {
-        if ($isOneDay) {
-            $query .= " AND DATE(order_date) = DATE(?)";
-        } else {
-            $query .= " AND order_date BETWEEN ? AND ?";
-        }
-    }
-    $stmt = $DB->prepare($query);
+    // Получаем историю заказов клиента с учетом дат
+    $ordersQuery = "SELECT o.id, o.order_date, o.total, o.status, oi.quantity, oi.price, p.name as product_name
+                    FROM orders o
+                    JOIN order_items oi ON o.id = oi.order_id
+                    JOIN products p ON oi.product_id = p.id
+                    WHERE o.client_id = ? 
+                    AND o.order_date >= ? 
+                    AND o.order_date <= ?
+                    ORDER BY o.order_date DESC";
     
-    if (!empty($dateFROM) && !empty($dateTO)) {
-        if ($isOneDay) {
-            $stmt->execute([$clientID, $dateFROM]);
-        } else {
-            $stmt->execute([$clientID, $dateFROM, $dateTO]);
-        }
-    } else {
-        $stmt->execute([$clientID]);
-    }
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $DB->prepare($ordersQuery);
+    $stmt->execute([$clientID, $dateFromSQL, $dateToSQL]);
+    $orderHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Проверяем, есть ли заказы у клиента
-    if (empty($orders)) {
-        // HTML для клиента без заказов
-        $html = '
-        <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-            <style>
-                body { font-family: DejaVu Sans, sans-serif; }
-                .header { text-align: center; margin-bottom: 20px; }
-                .message { text-align: center; font-size: 18px; margin-top: 50px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h2>История заказов клиента</h2>
-                <p>Период: ' . ((!empty($dateFROM) && !empty($dateTO)) ? $dateFROM . ' - ' . $dateTO : 'Все время') . '</p>
-            </div>
-            <div class="client-info">
-                <p>Клиент: ' . $history['user'] . '</p>
-            </div>
-            <div class="message">
-                <p>Данный клиент ещё ничего не заказывал</p>
-            </div>
-        </body>
-        </html>';
-    } else {
-        foreach ($orders as $order) {
-            // Запрос для получения элементов заказа с названиями продуктов
-            $itemsQuery = "SELECT oi.*, p.name as product_name 
-                         FROM order_items oi 
-                         JOIN products p ON oi.product_id = p.id 
-                         WHERE oi.order_id = ?";
-            $itemsStmt = $DB->prepare($itemsQuery);
-            $itemsStmt->execute([$order['id']]);
-            $items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+    // Формируем HTML для PDF с улучшенными стилями
+    $html = <<<HTML
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style>
+            body { 
+                font-family: DejaVu Sans, sans-serif;
+                margin: 20px;
+                color: #333;
+            }
+            .header { 
+                text-align: center;
+                margin-bottom: 30px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #eee;
+            }
+            .client-info { 
+                margin-bottom: 30px;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+            }
+            table { 
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+            }
+            th, td { 
+                border: 1px solid #dee2e6;
+                padding: 12px;
+                text-align: center;
+            }
+            th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+            }
+            td:nth-child(2) {
+                text-align: left;
+            }
+            td:nth-child(4), td:nth-child(5) {
+                text-align: right;
+            }
+            .total-row td {
+                text-align: right;
+                font-weight: bold;
+                background-color: #f8f9fa;
+            }
+            .total-row td:first-child {
+                text-align: right;
+            }
+            .order-header {
+                margin: 20px 0;
+                color: #2c3e50;
+            }
+            .status-active {
+                color: #2ecc71;
+                font-weight: bold;
+            }
+            .status-inactive {
+                color: #e74c3c;
+                font-weight: bold;
+                text-align: center !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h2>История заказов клиента</h2>
+            <p>Период: {$dateFROM} - {$dateTO}</p>
+        </div>
+        <div class="client-info">
+            <p>Клиент: {$clientData['name']}</p>
+        </div>
+HTML;
 
-            $history['orders'][] = [
-                "id" => $order['id'],
-                "date" => $order['order_date'],
-                "total" => $order['total'],
-                "status" => $order['status'],
-                "items" => $items
-            ];
-        }
+    if (empty($orderHistory)) {
+        $html .= '<div style="text-align: center; padding: 30px;">
+                    <p>У данного клиента нет заказов за выбранный период</p>
+                 </div>';
+    } else {
+        $currentOrderId = null;
+        $orderTotal = 0;
         
-        // Добавляем код для генерации чека
-        $data = [
-            "clientID" => $clientID,
-            "orderDate" => (!empty($dateFROM) && !empty($dateTO)) ? 
-                ($isOneDay ? date('Y-m-d', strtotime($dateFROM)) : $dateFROM . ' - ' . $dateTO) : 
-                'Все время',
-            "orders" => $history['orders']
-        ];
-
-        // После формирования $data, создаем HTML для PDF
-        $html = '
-        <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-            <style>
-                body { font-family: DejaVu Sans, sans-serif; }
-                .header { text-align: center; margin-bottom: 20px; }
-                .client-info { margin-bottom: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h2>История заказов клиента</h2>
-                <p>Период: ' . $data['orderDate'] . '</p>
-            </div>
-            <div class="client-info">
-                <p>Клиент: ' . $history['user'] . '</p>
-            </div>';
-
-        foreach ($data['orders'] as $order) {
-            $html .= '
-            <h3>Заказ №' . $order['id'] . ' от ' . $order['date'] . '</h3>
-            <table>
-                <tr>
-                    <th>Наименование</th>
-                    <th>Количество</th>
-                    <th>Статус</th>
-                    <th>Сумма</th>
-                </tr>';
-            
-            foreach ($order['items'] as $item) {
-                $html .= '<tr>
-                    <td>' . $item['product_name'] . '</td>
-                    <td>' . $item['quantity'] . '</td>
-                    <td>' . ($order['status'] == 1 ? 'Активен' : 'Архив') . '</td>
-                    <td>' . $item['price'] . ' руб.</td>
-                </tr>';
+        foreach ($orderHistory as $item) {
+            if ($currentOrderId !== $item['id']) {
+                // Закрываем предыдущую таблицу, если она существует
+                if ($currentOrderId !== null) {
+                    $html .= "<tr class='total-row'>
+                                <td colspan='4' style='text-align: right;'><strong>Итого:</strong></td>
+                                <td style='text-align: right;'><strong>{$orderTotal} руб.</strong></td>
+                                <td></td>
+                            </tr></table>";
+                }
+                
+                $currentOrderId = $item['id'];
+                $orderTotal = 0;
+                
+                $html .= "<h3 class='order-header'>Заказ №{$item['id']} от {$item['order_date']}</h3>
+                         <table>
+                            <tr>
+                                <th>ID заказа</th>
+                                <th>Товар</th>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                            </tr>";
             }
             
-            $html .= '
-                <tr>
-                    <td colspan="3" style="text-align: right;"><strong>Итого:</strong></td>
-                    <td><strong>' . $order['total'] . ' руб.</strong></td>
-                </tr>
-            </table>';
+            $itemTotal = $item['quantity'] * $item['price'];
+            $orderTotal += $itemTotal;
+            
+            $html .= "<tr>
+                        <td style='text-align: center;'>{$item['id']}</td>
+                        <td style='text-align: left;'>{$item['product_name']}</td>
+                        <td style='text-align: center;'>{$item['quantity']}</td>
+                        <td style='text-align: right;'>{$item['price']} руб.</td>
+                        <td style='text-align: right;'>{$itemTotal} руб.</td>
+                        <td style='text-align: center; color: " . ($item['status'] == 1 ? '#2ecc71' : '#e74c3c') . "; font-weight: bold;'>" . 
+                        ($item['status'] == 1 ? 'Активен' : 'Неактивен') . "</td>
+                    </tr>";
         }
         
-        $html .= '</body></html>';
+        // Закрываем последнюю таблицу
+        if ($currentOrderId !== null) {
+            $html .= "<tr class='total-row'>
+                        <td colspan='4' style='text-align: right;'><strong>Итого:</strong></td>
+                        <td style='text-align: right;'><strong>{$orderTotal} руб.</strong></td>
+                        <td></td>
+                    </tr></table>";
+        }
     }
 
-    // Инициализация Dompdf
+    $html .= '</body></html>';
+
+    // Генерируем PDF
     $options = new Options();
     $options->set('isHtml5ParserEnabled', true);
     $options->set('isPhpEnabled', true);
@@ -182,10 +199,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
-    
-    // Отправляем PDF в браузер
+
+    // Отправляем PDF
+    $filename = "История_заказов_" . $clientData['name'] . ".pdf";
     header('Content-Type: application/pdf');
-    header('Content-Disposition: attachment; filename="История_Клиента_' . $clientID . '.pdf"');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
     echo $dompdf->output();
     exit();
 }

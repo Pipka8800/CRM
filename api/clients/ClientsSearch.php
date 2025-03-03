@@ -14,13 +14,13 @@ function ClientsSearch($params, $DB) {
         $orderBy = " ORDER BY $search_name DESC";
     }
 
-    $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $maxClients = 5;
-    $offset = ($currentPage - 1) * $maxClients;
+    $page = isset($params['page']) ? (int)$params['page'] : 1;
+    $limit = 5;
+    $offset = ($page - 1) * $limit;
 
-    $clients = $DB->query(
-        "SELECT * FROM clients WHERE LOWER($search_name) LIKE '%$search%'$orderBy LIMIT $maxClients OFFSET $offset"
-    )->fetchAll();
+    $query = "SELECT * FROM clients WHERE LOWER($search_name) LIKE '%$search%'$orderBy LIMIT $limit OFFSET $offset";
+
+    $clients = $DB->query($query)->fetchAll();
 
     return $clients;
 }

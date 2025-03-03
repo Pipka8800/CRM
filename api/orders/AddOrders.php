@@ -58,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     }
 
-    // Безопасное получение ID администратора
     $stmt = $DB->prepare("SELECT id FROM users WHERE token = ?");
     $stmt->execute([$_SESSION['token']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);

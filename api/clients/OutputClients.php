@@ -1,45 +1,32 @@
 <?php 
-// Правильное оформление стилей внутри PHP
+
 echo '<style>
 .date-range-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    background: transparent;
-    border-radius: 8px;
+    gap: 5px;
 }
 
 .date-inputs {
     display: flex;
-    gap: 12px;
+    gap: 5px;
 }
 
 .date-input {
-    padding: 8px 12px;
-    border: 2px solid #e9ecef;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.date-input:focus {
-    border-color: #4a90e2;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(74,144,226,0.1);
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
 }
 
 .date-submit-btn {
-    background-color: #4a90e2;
+    padding: 5px 10px;
+    background-color: #428bca;
     color: white;
-    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .date-submit-btn:hover {
@@ -54,6 +41,14 @@ echo '<style>
 }
 </style>';
 
+function convertParams($params) {
+            $outputParams = [];
+            foreach ($params as $key => $value) {
+                $outputParams[] = $key . '=' . $value;
+            }
+            return implode('&', $outputParams);
+        }
+
 function OutputClients($clients) {
     foreach ($clients as $key => $client) {
         $id = $client['id'];
@@ -62,13 +57,19 @@ function OutputClients($clients) {
         $phone = $client['phone'];
         $birthday = $client['birthday'];
         $created_at = $client['created_at'];
-        echo "
-            <tr>
+
+        
+        $QueryParams = $_GET;
+        $QueryParams['send-email'] = $email;
+        $QueryParams = convertParams($QueryParams);
+
+        echo "<tr>
                 <td>$id</td>
                 <td>$name</td>
-                <td>$email</td>
+                <td><a href='?$QueryParams'>$email</a></td>
                 <td>$phone</td>
                 <td>$birthday</td>
+                <td>$created_at</td>
                 <td>
                     <form class='date-range-form' action='api/clients/ClientHistory.php' method='GET'>
                         <div class='date-inputs'>
