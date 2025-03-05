@@ -15,6 +15,25 @@ require_once 'api/clients/ClientsSearch.php';
 
 AuthCheck('', 'login.php');
 
+// Добавляем обработку POST запроса для редактирования клиента
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+    $id = (int)$_POST['id'];
+    $fullname = $_POST['fullname'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+
+    $stmt = $DB->prepare("UPDATE clients SET fullname = ?, email = ?, phone = ? WHERE id = ?");
+    $result = $stmt->execute([$fullname, $email, $phone, $id]);
+
+    if ($result) {
+        header("Location: clients.php?success=edit");
+        exit;
+    } else {
+        header("Location: clients.php?error=edit");
+        exit;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -208,7 +227,8 @@ AuthCheck('', 'login.php');
           </div>
         </div>
       </div>
-      <div class="modal micromodal-slide" id="edit-modal" aria-hidden="true">
+      <div class="modal micromodal-slide <?php
+        if (isset($_GET['edit-user']) && !empty($_GET['edit-user'])) {echo ' open';}?>" id="edit-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
             <header class="modal__header">
@@ -218,18 +238,27 @@ AuthCheck('', 'login.php');
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
             <main class="modal__content" id="modal-1-content">
-                <form class="modal__form">
+                <?php
+                    if (isset($_GET['edit-user']) && !empty($_GET['edit-user'])) {
+                        $userId = (int)$_GET['edit-user'];
+                        $stmt = $DB->prepare("SELECT fullname, email, phone FROM clients WHERE id = ?");
+                        $stmt->execute([$userId]);
+                        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    }
+                ?>
+                <form class="modal__form" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $userId ?? ''; ?>">
                     <div class="modal__form-group">
                         <label for="fullname">ФИО</label>
-                        <input type="text" id="fullname" name="fullname">
+                        <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($user['fullname'] ?? ''); ?>">
                     </div>
                     <div class="modal__form-group">
                         <label for="email">Почта</label>
-                        <input type="email" id="email" name="email">
+                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
                     </div>
                     <div class="modal__form-group">
                         <label for="phone">Телефон</label>
-                        <input type="tel" id="phone" name="phone">
+                        <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>">
                     </div>
                     <div class="modal__form-actions">
                         <button type="submit" class="modal__btn">Сохранить</button>
@@ -332,7 +361,7 @@ AuthCheck('', 'login.php');
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
-    <script>
+    <script> //скрипт для модалок отправки письма и редактирования, чтобы не открывались при загрузке страницы
     // Очищаем URL от параметра send-email при закрытии модального окна
     document.querySelector('#send-email-modal .modal__close').addEventListener('click', function() {
         let url = new URL(window.location.href);
@@ -340,11 +369,22 @@ AuthCheck('', 'login.php');
         window.history.replaceState({}, '', url);
     });
 
-    // Если модальное окно было открыто, очищаем URL после загрузки страницы
+    // Очищаем URL от параметра edit-user при закрытии модального окна
+    document.querySelector('#edit-modal .modal__close').addEventListener('click', function() {
+        let url = new URL(window.location.href);
+        url.searchParams.delete('edit-user');
+        window.history.replaceState({}, '', url);
+    });
+
+    // Если модальные окна были открыты, очищаем URL после загрузки страницы
     window.addEventListener('load', function() {
-        if (new URL(window.location.href).searchParams.has('send-email')) {
-            let url = new URL(window.location.href);
+        let url = new URL(window.location.href);
+        if (url.searchParams.has('send-email')) {
             url.searchParams.delete('send-email');
+            window.history.replaceState({}, '', url);
+        }
+        if (url.searchParams.has('edit-user')) {
+            url.searchParams.delete('edit-user');
             window.history.replaceState({}, '', url);
         }
     });
