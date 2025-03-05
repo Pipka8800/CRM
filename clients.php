@@ -15,25 +15,6 @@ require_once 'api/clients/ClientsSearch.php';
 
 AuthCheck('', 'login.php');
 
-// Добавляем обработку POST запроса для редактирования клиента
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $id = (int)$_POST['id'];
-    $fullname = $_POST['fullname'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-
-    $stmt = $DB->prepare("UPDATE clients SET fullname = ?, email = ?, phone = ? WHERE id = ?");
-    $result = $stmt->execute([$fullname, $email, $phone, $id]);
-
-    if ($result) {
-        header("Location: clients.php?success=edit");
-        exit;
-    } else {
-        header("Location: clients.php?error=edit");
-        exit;
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -171,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
 
                         ?>
                     </tbody>
-            </table>
+                </table>
             </div>
         </section>
     </main>
@@ -227,8 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
           </div>
         </div>
       </div>
-      <div class="modal micromodal-slide <?php
-        if (isset($_GET['edit-user']) && !empty($_GET['edit-user'])) {echo ' open';}?>" id="edit-modal" aria-hidden="true">
+      <div class="modal micromodal-slide" id="edit-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
           <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
             <header class="modal__header">
@@ -241,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
                 <?php
                     if (isset($_GET['edit-user']) && !empty($_GET['edit-user'])) {
                         $userId = (int)$_GET['edit-user'];
-                        $stmt = $DB->prepare("SELECT fullname, email, phone FROM clients WHERE id = ?");
+                        $stmt = $DB->prepare("SELECT name, email, phone FROM clients WHERE id = ?");
                         $stmt->execute([$userId]);
                         $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     }
@@ -250,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
                     <input type="hidden" name="id" value="<?php echo $userId ?? ''; ?>">
                     <div class="modal__form-group">
                         <label for="fullname">ФИО</label>
-                        <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($user['fullname'] ?? ''); ?>">
+                        <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
                     </div>
                     <div class="modal__form-group">
                         <label for="email">Почта</label>
