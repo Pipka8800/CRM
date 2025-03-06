@@ -1,8 +1,11 @@
 <?php
 
 function AuthCheck($successPath = '', $errorPath = '') {
-    require_once 'api/DB.php';
-    require_once 'LogoutUser.php';
+    global $DB;
+    
+    // Изменяем пути для корректного подключения файлов
+    require_once __DIR__ . '/../DB.php';
+    require_once __DIR__ . '/LogoutUser.php';
 
     // Проверка наличия ключа token в $_SESSION
     if (!isset($_SESSION['token'])) {

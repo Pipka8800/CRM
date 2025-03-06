@@ -50,6 +50,21 @@ function convertParams($params) {
         }
 
 function OutputClients($clients) {
+    // Собираем параметры поиска
+    $searchParams = '';
+    if (isset($_GET['search_name'])) {
+        $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
+    }
+    if (isset($_GET['search'])) {
+        $searchParams .= '&search=' . urlencode($_GET['search']);
+    }
+    if (isset($_GET['sort'])) {
+        $searchParams .= '&sort=' . urlencode($_GET['sort']);
+    }
+    if (isset($_GET['page'])) {
+        $searchParams .= '&page=' . urlencode($_GET['page']);
+    }
+
     foreach ($clients as $key => $client) {
         $id = $client['id'];
         $name = $client['name'];
@@ -66,7 +81,7 @@ function OutputClients($clients) {
         echo "<tr>
                 <td>$id</td>
                 <td>$name</td>
-                <td><a href='?send-email=$email'>$email</a></td>
+                <td><a href='?send-email=$email$searchParams'>$email</a></td>
                 <td>$phone</td>
                 <td>$birthday</td>
                 <td>$created_at</td>
@@ -80,8 +95,8 @@ function OutputClients($clients) {
                         <button type='submit' class='date-submit-btn'>Сформировать</button>
                     </form>
                 </td>
-                <td><a href='?edit-user=$id'><i class='fa fa-pencil'></i></a></td>
-                <td><a href='api/clients/ClientsDelete.php?id=$id'><i class='fa fa-trash'></i></a></td>
+                <td><a href='?edit-user=$id$searchParams'><i class='fa fa-pencil'></i></a></td>
+                <td><a href='api/clients/ClientsDelete.php?id=$id$searchParams'><i class='fa fa-trash'></i></a></td>
             </tr>";
     }
 }

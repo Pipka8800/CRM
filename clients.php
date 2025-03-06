@@ -225,12 +225,27 @@ AuthCheck('', 'login.php');
                         $stmt->execute([$userId]);
                         $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     }
+
+                    // Сохраняем параметры поиска для формы
+                    $searchParams = '';
+                    if (isset($_GET['search_name'])) {
+                        $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
+                    }
+                    if (isset($_GET['search'])) {
+                        $searchParams .= '&search=' . urlencode($_GET['search']);
+                    }
+                    if (isset($_GET['sort'])) {
+                        $searchParams .= '&sort=' . urlencode($_GET['sort']);
+                    }
+                    if (isset($_GET['page'])) {
+                        $searchParams .= '&page=' . urlencode($_GET['page']);
+                    }
                 ?>
-                <form class="modal__form" method="POST">
+                <form class="modal__form" method="POST" action="api/clients/EditClient.php?<?php echo ltrim($searchParams, '&'); ?>">
                     <input type="hidden" name="id" value="<?php echo $userId ?? ''; ?>">
                     <div class="modal__form-group">
                         <label for="fullname">ФИО</label>
-                        <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
+                        <input type="text" id="fullname" name="name" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
                     </div>
                     <div class="modal__form-group">
                         <label for="email">Почта</label>
@@ -349,20 +364,16 @@ AuthCheck('', 'login.php');
         window.history.replaceState({}, '', url);
     });
 
-    // Очищаем URL от параметра edit-user при закрытии модального окна
+    // Очищаем URL от параметра edit-user при закрытии модального окна, сохраняя параметры поиска
     document.querySelector('#edit-modal .modal__close').addEventListener('click', function() {
         let url = new URL(window.location.href);
         url.searchParams.delete('edit-user');
         window.history.replaceState({}, '', url);
     });
 
-    // Если модальные окна были открыты, очищаем URL после загрузки страницы
+    // Если модальное окно было открыто, очищаем только параметр edit-user после загрузки страницы
     window.addEventListener('load', function() {
         let url = new URL(window.location.href);
-        if (url.searchParams.has('send-email')) {
-            url.searchParams.delete('send-email');
-            window.history.replaceState({}, '', url);
-        }
         if (url.searchParams.has('edit-user')) {
             url.searchParams.delete('edit-user');
             window.history.replaceState({}, '', url);
