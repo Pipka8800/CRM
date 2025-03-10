@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Фев 27 2025 г., 03:53
+-- Время создания: Мар 10 2025 г., 05:57
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -41,13 +41,14 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `name`, `email`, `phone`, `birthday`, `created_at`) VALUES
-(2, 'Maria Petrovna', 'maria.petrova@example.com', '+79991234568', '1990-07-20', '2025-01-13 09:21:57'),
+(2, 'Maria Sosi', 'maria.sosovna@example.com', '+79991234856', '1990-07-20', '2025-01-13 09:21:57'),
 (3, 'Sergei Sidorov', 'sergey.sidorov@example.com', '+79991234569', '1988-03-30', '2025-01-13 09:21:57'),
 (6, 'Pedik Petr', 'dmitry.dmitriev@mail.ru', '13895714124', '2025-01-31', '2025-02-03 03:04:50'),
 (1738895546, 'не указано', 'lox@mail.ru', 'не указано', '0000-00-00', '2025-02-07 02:32:26'),
 (1738895547, 'Ivan Ivanov', 'ivan.ivanov@mail.ru', '88005553535', '2025-01-27', '2025-02-25 14:52:18'),
 (1738895548, 'Mac Traher', 'HUI@mail.ru', '7 923 2275088', '2025-01-27', '2025-02-26 08:19:17'),
-(1738895552, 'Дибил Дибилов', 'magaaaN228@mail.ru', '88005553530', '2025-02-11', '2025-02-26 08:27:10');
+(1738895552, 'Дибил Какашков', 'magaaaN228@mail.ru', '88005553530', '2025-02-11', '2025-02-26 08:27:10'),
+(1738895553, 'Хых Хохов', 'kakish@moimail.ru', '99005553535', '2025-03-06', '2025-03-06 04:48:14');
 
 -- --------------------------------------------------------
 
@@ -99,7 +100,9 @@ INSERT INTO `orders` (`id`, `client_id`, `order_date`, `total`, `status`, `admin
 (1740542488, 6, '2025-02-25 22:01:28', 2000.00, '0', 1),
 (1740542544, 6, '2025-02-26 04:02:24', 1850.00, '1', NULL),
 (1740542638, 6, '2025-02-26 04:03:58', 250.50, '1', NULL),
-(1740542912, 6, '2025-02-26 04:08:32', 850.00, '1', 1);
+(1740542912, 6, '2025-02-26 04:08:32', 850.00, '1', 1),
+(1741236404, 2, '2025-03-06 04:46:44', 3350.00, '1', 1),
+(1741236412, 6, '2025-03-06 04:46:52', 1750.50, '1', 1);
 
 -- --------------------------------------------------------
 
@@ -191,7 +194,13 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (102, 1740542638, 1, 1, 100.00),
 (103, 1740542638, 2, 1, 150.50),
 (104, 1740542912, 9, 1, 500.00),
-(105, 1740542912, 10, 1, 350.00);
+(105, 1740542912, 10, 1, 350.00),
+(106, 1741236404, 9, 1, 500.00),
+(107, 1741236404, 10, 1, 350.00),
+(108, 1741236404, 11, 1, 2500.00),
+(109, 1741236412, 1, 1, 100.00),
+(110, 1741236412, 2, 1, 150.50),
+(111, 1741236412, 6, 1, 1500.00);
 
 -- --------------------------------------------------------
 
@@ -212,13 +221,61 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`) VALUES
-(1, 'Tovar 1', 'Opisanie tovara 1', 100.00, 50),
+(1, 'Tovar 1 и всё', 'Opisanie tovara 1', 100.00, 50),
 (2, 'Tovar 2', 'Opisanie tovara 2', 150.50, 30),
 (6, 'какашки', 'очень вкусные', 1500.00, 75),
 (8, 'товарик3', 'не будет', 123.00, 15),
 (9, 'стул', 'кожанный', 500.00, 30),
 (10, 'дай денег', 'кошёлек бабла', 350.00, 10),
-(11, 'пипися', 'реальная пипися', 2500.00, 3);
+(11, 'пипися', 'реальная пипися', 2500.00, 3),
+(12, 'СВО', 'Поддержка', 400.00, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `tickets`
+--
+
+CREATE TABLE `tickets` (
+  `id` int(11) NOT NULL,
+  `type` enum('tech','crm') NOT NULL,
+  `message` varchar(256) DEFAULT NULL,
+  `clients` int(11) NOT NULL,
+  `admin` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `tickets`
+--
+
+INSERT INTO `tickets` (`id`, `type`, `message`, `clients`, `admin`, `created_at`) VALUES
+(1, 'tech', 'как срать?', 2, 1, '2025-03-10 04:03:45'),
+(2, 'crm', 'crm гавно переделывай!', 6, 1, '2025-03-10 04:03:48'),
+(3, 'tech', 'БЛЯЯЯТЬ', 1, NULL, '2025-03-10 04:56:21'),
+(4, 'crm', 'Я ваш рот ебал', 1, NULL, '2025-03-10 04:56:58');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `ticket_messages`
+--
+
+CREATE TABLE `ticket_messages` (
+  `id` int(11) NOT NULL,
+  `ticket_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `message` varchar(256) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `ticket_messages`
+--
+
+INSERT INTO `ticket_messages` (`id`, `ticket_id`, `user_id`, `message`, `created_at`) VALUES
+(1, 1, 1, 'Поч?', '2025-03-10 04:11:25'),
+(2, 2, 1, 'Ты даун, сосал?!', '2025-03-10 04:11:27');
 
 -- --------------------------------------------------------
 
@@ -278,6 +335,18 @@ ALTER TABLE `products`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Индексы таблицы `tickets`
+--
+ALTER TABLE `tickets`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `ticket_messages`
+--
+ALTER TABLE `ticket_messages`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
@@ -292,25 +361,37 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1738895553;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1738895554;
 
 --
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1740542913;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1741236413;
 
 --
 -- AUTO_INCREMENT для таблицы `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT для таблицы `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT для таблицы `tickets`
+--
+ALTER TABLE `tickets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT для таблицы `ticket_messages`
+--
+ALTER TABLE `ticket_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
