@@ -32,4 +32,26 @@ document.addEventListener('DOMContentLoaded', function() {
             MicroModal.show('send-email-modal');
         }, 100);
     }
+
+    // Инициализация состояния формы техподдержки
+    const supportBtn = document.querySelector('.support-btn');
+    const supportForm = document.querySelector('.support-create-ticket');
+
+    // Обработчик клика по кнопке поддержки
+    supportBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // Предотвращаем всплытие события
+        supportForm.classList.toggle('active');
+    });
+
+    // Закрытие формы при клике вне её области
+    document.addEventListener('click', function(e) {
+        if (!supportForm.contains(e.target) && !supportBtn.contains(e.target)) {
+            supportForm.classList.remove('active');
+        }
+    });
+
+    // Предотвращаем закрытие формы при клике внутри неё
+    supportForm.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 });

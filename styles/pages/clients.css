@@ -766,3 +766,142 @@ td[data-email]:hover {
         width: 100%;
     }
 }
+
+/* Стили для кнопки техподдержки */
+.support-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.support-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Стили для формы создания тикета */
+.support-create-ticket {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    z-index: 999;
+    display: none; /* По умолчанию скрыта */
+}
+
+.support-create-ticket.active {
+    display: block;
+}
+
+.support-create-ticket form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.support-create-ticket label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.support-create-ticket textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.support-create-ticket textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.support-create-ticket input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.support-create-ticket input[type="file"]:hover {
+    border-color: #4a76a8;
+}
+
+.support-create-ticket input[type="file"]::-webkit-file-upload-button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4a76a8;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.support-create-ticket input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #3d6393;
+}
+
+/* Стили для формы техподдержки */
+.support-select {
+    width: 100%;
+    padding: 10px 35px 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    outline: none;
+    appearance: none;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234a76a8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.support-select:hover {
+    border-color: #4a76a8;
+}
+
+.support-select:focus {
+    border-color: #4a76a8;
+    box-shadow: 0 0 0 3px rgba(74, 118, 168, 0.1);
+}
+
+.support-submit {
+    background-color: #4a76a8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.support-submit:hover {
+    background-color: #3d6393;
+}

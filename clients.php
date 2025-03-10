@@ -1,5 +1,8 @@
 <?php session_start();
 
+
+
+
 if (isset($_GET['do']) && $_GET['do'] === 'logout') {
     require_once 'api/auth/LogoutUser.php';
     require_once 'api/DB.php';
@@ -356,6 +359,26 @@ AuthCheck('', 'login.php');
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
+
+    <!-- техподдержка -->
+    <button class="support-btn">
+        <i class="fa fa-question"></i>
+    </button>
+
+    <div class="support-create-ticket">
+        <form action="api/tickets/CreateTicket.php" method="POST">
+            <label for="type">Тип обращения</label>
+            <select name="type" id="type" class="support-select">
+                <option value="tech">Техническая неполадка</option>
+                <option value="crm">Проблема с crm</option>
+            </select>
+            <label for="message">Текст обращения</label>
+            <textarea name="message" id="message"></textarea>
+            <input type="file" name="files" id="filse">
+            <button type="submit" class="support-submit">Создать тикет</button>
+        </form>
+    </div>
+
     <script> //скрипт для модалок отправки письма и редактирования, чтобы не открывались при загрузке страницы
     // Очищаем URL от параметра send-email при закрытии модального окна
     document.querySelector('#send-email-modal .modal__close').addEventListener('click', function() {
