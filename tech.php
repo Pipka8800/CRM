@@ -1,4 +1,16 @@
 <?php session_start();
+error_log('Session data in tech.php: ' . print_r($_SESSION, true));
+
+// Добавим получение user_id из token
+if (isset($_SESSION['token']) && !isset($_SESSION['user_id'])) {
+    require_once 'api/DB.php';
+    $stmt = $DB->prepare("SELECT id FROM users WHERE token = ?");
+    $stmt->execute([$_SESSION['token']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+    }
+}
 
 if (isset($_GET['do']) && $_GET['do'] === 'logout') {
     require_once 'api/auth/LogoutUser.php';
@@ -171,6 +183,13 @@ if ($userType !== 'tech') {
                         <div class='ticket-admin'><i class='fa fa-user-circle'></i> " . ($ticket['admin_name'] ? htmlspecialchars($ticket['admin_name']) : 'Не назначен') . "</div>
                         <div class='ticket-date'><i class='fa fa-calendar'></i> " . date('d.m.Y H:i', strtotime($ticket['created_at'])) . "</div>";
                     
+                    // Добавляем кнопку чата перед кнопкой просмотра файла
+                    echo "<div class='ticket-chat'>
+                            <button onclick='openChat(" . $ticket['id'] . ")' class='chat-btn'>
+                                <i class='fa fa-comments'></i> Чат
+                            </button>
+                        </div>";
+                    
                     // Добавляем кнопку просмотра файла, если он есть
                     if ($ticket['file_path']) {
                         echo "<div class='ticket-file'>
@@ -200,6 +219,29 @@ if ($userType !== 'tech') {
                 <div id="file-content"></div>
             </main>
           </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для чата -->
+    <div class="modal micromodal-slide" id="chat-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="chat-modal-title">
+                <header class="modal__header">
+                    <h2 class="modal__title" id="chat-modal-title">
+                        Чат
+                    </h2>
+                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="chat-modal-content">
+                    <div id="chat-messages" class="chat-messages"></div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Введите сообщение...">
+                        <button id="send-message" class="send-btn">
+                            <i class="fa fa-paper-plane"></i> Отправить
+                        </button>
+                    </div>
+                </main>
+            </div>
         </div>
     </div>
 
@@ -249,6 +291,70 @@ if ($userType !== 'tech') {
                 stopAllMedia();
             }
         });
+
+        let currentTicketId = null;
+
+        window.openChat = function(ticketId) {
+            currentTicketId = ticketId;
+            loadChatMessages(ticketId);
+            MicroModal.show('chat-modal');
+        }
+
+        function loadChatMessages(ticketId) {
+            fetch(`api/tickets/GetTicketMessages.php?ticket_id=${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.innerHTML = '';
+                    data.forEach(message => {
+                        const messageTime = new Date(message.created_at).toLocaleString();
+                        chatMessages.innerHTML += `
+                            <div class="chat-message">
+                                <strong>${message.sender_name}:</strong> 
+                                ${message.message}
+                                <span class="message-time">(${messageTime})</span>
+                            </div>`;
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+        }
+
+        document.getElementById('send-message').addEventListener('click', function() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message && currentTicketId) {
+                const formData = new FormData();
+                formData.append('ticket_id', currentTicketId);
+                formData.append('message', message);
+
+                fetch('api/tickets/SendMessage.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        input.value = '';
+                        loadChatMessages(currentTicketId);
+                    } else {
+                        console.error('Server response:', data);
+                        alert('Ошибка при отправке сообщения: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('Ошибка при отправке сообщения: ' + error.message);
+                });
+            }
+        });
+
+        // Отправка по Enter
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('send-message').click();
+            }
+        });
     });
 
     function showFile(filePath) {
@@ -263,7 +369,7 @@ if ($userType !== 'tech') {
             fileContent.innerHTML = `<embed src="${filePath}" type="application/pdf" style="width: 100%; height: 600px;">`;
         } else if (extension === 'mp4') {
             fileContent.innerHTML = `
-                <video controls style="max-width: 100%; height: auto;">
+                <video controls style="width: 100%; max-height: 80vh; object-fit: contain;">
                     <source src="${filePath}" type="video/mp4">
                     Ваш браузер не поддерживает видео тег.
                 </video>`;
