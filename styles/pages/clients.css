@@ -1131,3 +1131,29 @@ td[data-email]:hover {
     padding: 20px;
     color: #ff0000;
 }
+
+.file-view-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.file-view-btn:hover {
+    background-color: #45a049;
+}
+
+.ticket-file {
+    margin-top: 10px;
+}
+
+#file-content {
+    max-height: 80vh;
+    overflow: auto;
+}

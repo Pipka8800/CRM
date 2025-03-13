@@ -63,19 +63,6 @@ if ($userType !== 'tech') {
         </div>
     </header>
 
-    <!-- 
-    1. отобразить в виде карточек обращения пользователей
-        контент карточки:
-            id
-            тип ошибки(проблема с crm / технические неполадки)
-            текст ошибки
-            ФИО пользователя
-            ФИО привязанного админа (если есть, если нету - пусто)
-            дата создания
-            статус (ожидает (waiting), в работе (work), выполнено (complete))
-    2. Добавить постраничную навигацию
-     -->
-
     <main class="main">
         <div class="container">
         <h2 class="main__clients__title">Список обращений пользователей</h2>
@@ -183,6 +170,15 @@ if ($userType !== 'tech') {
                         <div class='ticket-admin'><i class='fa fa-user-circle'></i> " . ($ticket['admin_name'] ? htmlspecialchars($ticket['admin_name']) : 'Не назначен') . "</div>
                         <div class='ticket-date'><i class='fa fa-calendar'></i> " . date('d.m.Y H:i', strtotime($ticket['created_at'])) . "</div>";
                     
+                    // Добавляем кнопку просмотра файла, если он есть
+                    if ($ticket['file_path']) {
+                        echo "<div class='ticket-file'>
+                            <button onclick='showFile(\"" . htmlspecialchars($ticket['file_path']) . "\")' class='file-view-btn'>
+                                <i class='fa fa-file'></i> Просмотреть файл
+                            </button>
+                        </div>";
+                    }
+                    
                     echo "</div>";
                 }
             ?>
@@ -190,7 +186,107 @@ if ($userType !== 'tech') {
         </div>
     </main>
 
+    <div class="modal micromodal-slide" id="file-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header">
+                    <h2 class="modal__title" id="modal-1-title">
+                        Просмотр файла
+                    </h2>
+                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="modal-1-content">
+                    <div id="file-content"></div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+    }
+
+    .modal.is-open {
+        display: block;
+    }
+
+    .modal__overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal__container {
+        background-color: #fff;
+        padding: 20px;
+        max-width: 80%;
+        max-height: 80vh;
+        border-radius: 4px;
+        overflow-y: auto;
+    }
+
+    .modal__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .modal__close {
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .modal__content {
+        margin-bottom: 20px;
+    }
+    </style>
+
+    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализация MicroModal
+        MicroModal.init({
+            openTrigger: 'data-micromodal-trigger',
+            closeTrigger: 'data-micromodal-close',
+            disableScroll: true,
+            awaitOpenAnimation: false,
+            awaitCloseAnimation: false
+        });
+    });
+
+    function showFile(filePath) {
+        const fileContent = document.getElementById('file-content');
+        const extension = filePath.split('.').pop().toLowerCase();
+        
+        fileContent.innerHTML = '';
+        
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+            fileContent.innerHTML = `<img src="${filePath}" style="max-width: 100%; height: auto;">`;
+        } else if (['pdf'].includes(extension)) {
+            fileContent.innerHTML = `<embed src="${filePath}" type="application/pdf" style="width: 100%; height: 600px;">`;
+        } else {
+            fileContent.innerHTML = `<a href="${filePath}" target="_blank" class="modal__btn">Скачать файл</a>`;
+        }
+        
+        MicroModal.show('file-modal');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', function() {

@@ -36,24 +36,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Проверяем, был ли загружен файл
         if (isset($_FILES['ticket_file']) && $_FILES['ticket_file']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = 'uploads/tickets/';
+            $uploadDir = '../../uploads/tickets/';
+            
+            // Создаем директорию, если она не существует
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
             
-            $fileName = basename($_FILES['ticket_file']['name']);
-            $filePath = $uploadDir . $fileName;
+            // Получаем расширение файла
+            $fileInfo = pathinfo($_FILES['ticket_file']['name']);
+            $extension = strtolower($fileInfo['extension']);
             
-            $counter = 1;
-            $fileInfo = pathinfo($filePath);
-            while (file_exists($filePath)) {
-                $fileName = $fileInfo['filename'] . '_' . $counter . '.' . $fileInfo['extension'];
-                $filePath = $uploadDir . $fileName;
-                $counter++;
+            // Список разрешенных расширений
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt'];
+            
+            if (!in_array($extension, $allowedExtensions)) {
+                header('Location: ../../clients.php?ticket_status=invalid_file');
+                exit;
             }
             
+            // Генерируем уникальное имя файла
+            $fileName = uniqid() . '_' . basename($_FILES['ticket_file']['name']);
+            $filePath = $uploadDir . $fileName;
+            
+            // Перемещаем загруженный файл
             if (move_uploaded_file($_FILES['ticket_file']['tmp_name'], $filePath)) {
-                $filePathForDB = $filePath;
+                $filePathForDB = 'uploads/tickets/' . $fileName;
+            } else {
+                header('Location: ../../clients.php?ticket_status=upload_error');
+                exit;
             }
         }
         
