@@ -360,7 +360,7 @@
         gap: 10px;
     }
 
-    .main__clients__title {
+    .main__clients__title{
         font-size: 20px;
     }
 
@@ -904,4 +904,230 @@ td[data-email]:hover {
 
 .support-submit:hover {
     background-color: #3d6393;
+}
+
+.tickets-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.ticket-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.ticket-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.status-waiting {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-work {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-complete {
+    background: #d4edda;
+    color: #155724;
+}
+
+.ticket-type {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.ticket-message {
+    margin-bottom: 12px;
+    color: #666;
+}
+
+.ticket-client,
+.ticket-admin,
+.ticket-date {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.tickets-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.ticket-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination a,
+.pagination-container > a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+}
+
+.pagination a.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination-container > a[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.status-select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23464646' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+    transition: all 0.2s ease;
+}
+
+.status-select:hover {
+    border-color: #999;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Стили для разных статусов */
+.status-select.status-waiting {
+    background-color: #fff4e5;
+    color: #663c00;
+    border-color: #ffb74d;
+}
+
+.status-select.status-work {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border-color: #64b5f6;
+}
+
+.status-select.status-complete {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+    border-color: #81c784;
+}
+
+/* Стили для option */
+.status-select option {
+    padding: 8px;
+    background-color: white;
+    color: #333;
+}
+
+.status-select option:hover {
+    background-color: #f5f5f5;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: #3d8b40;
+    color: white;
+}
+
+.filter-btn.active {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.filter-btn.active:hover {
+    background: #3d8b40;
+    border-color: #3d8b40;
+}
+
+.ticket-file {
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+.ticket-file a {
+    color: #0066cc;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.ticket-file a:hover {
+    text-decoration: underline;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: #ff0000;
 }

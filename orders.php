@@ -419,6 +419,7 @@ if (isset($_SESSION['search_status'])) {
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
+
     <script defer src="scripts/orders.js"></script>
     <script>
     function editOrder(id, status) {
@@ -427,5 +428,24 @@ if (isset($_SESSION['search_status'])) {
         MicroModal.show('edit-modal');
     }
     </script>
+
+    <!-- техподдержка -->
+    <button class="support-btn">
+        <i class="fa fa-question"></i>
+    </button>
+
+    <div class="support-create-ticket">
+        <form action="api/tickets/CreateTicket.php" method="POST" enctype="multipart/form-data">
+            <label for="type">Тип обращения</label>
+            <select name="type" id="type" class="support-select">
+                <option value="tech">Техническая неполадка</option>
+                <option value="crm">Проблема с crm</option>
+            </select>
+            <label for="message">Текст обращения</label>
+            <textarea name="message" id="message"></textarea>
+            <input type="file" name="ticket_file" id="ticket_file">
+            <button type="submit" class="support-submit">Создать тикет</button>
+        </form>
+    </div>
 </body>
 </html>

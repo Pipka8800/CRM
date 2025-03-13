@@ -1,8 +1,5 @@
 <?php session_start();
 
-
-
-
 if (isset($_GET['do']) && $_GET['do'] === 'logout') {
     require_once 'api/auth/LogoutUser.php';
     require_once 'api/DB.php';
@@ -376,7 +373,7 @@ AuthCheck('', 'login.php');
     </button>
 
     <div class="support-create-ticket">
-        <form action="api/tickets/CreateTicket.php" method="POST">
+        <form action="api/tickets/CreateTicket.php" method="POST" enctype="multipart/form-data">
             <label for="type">Тип обращения</label>
             <select name="type" id="type" class="support-select">
                 <option value="tech">Техническая неполадка</option>
@@ -384,7 +381,7 @@ AuthCheck('', 'login.php');
             </select>
             <label for="message">Текст обращения</label>
             <textarea name="message" id="message"></textarea>
-            <input type="file" name="files" id="filse">
+            <input type="file" name="ticket_file" id="ticket_file">
             <button type="submit" class="support-submit">Создать тикет</button>
         </form>
     </div>

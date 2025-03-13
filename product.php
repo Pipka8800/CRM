@@ -12,21 +12,6 @@ AuthCheck('', 'login.php');
 
 require_once 'api/helpers/InputDefaultValue.php';
 
-// require 'vendor/autoload.php';
-// use Endroid\QrCode\QrCode;
-// use Endroid\QrCode\Writer\PngWriter;
-// $qrCode = new QrCode('ИДИ НА ХУЙ');
-// $writer = new PngWriter();
-// $result = $writer->write($qrCode);
-// header('Content-Type: '.$result->getMimeType());
-// echo $result->getString();
-
-/**
- * 1.фильрация / сортировка
- * 2.вывод продуктов
- * 3.добавление
- * 4.удаление
- */
 ?>
 
 <!DOCTYPE html>
@@ -315,6 +300,25 @@ require_once 'api/helpers/InputDefaultValue.php';
         MicroModal.show('edit-modal');
     }
     </script>
+
+    <!-- техподдержка -->
+    <button class="support-btn">
+        <i class="fa fa-question"></i>
+    </button>
+
+    <div class="support-create-ticket">
+        <form action="api/tickets/CreateTicket.php" method="POST" enctype="multipart/form-data">
+            <label for="type">Тип обращения</label>
+            <select name="type" id="type" class="support-select">
+                <option value="tech">Техническая неполадка</option>
+                <option value="crm">Проблема с crm</option>
+            </select>
+            <label for="message">Текст обращения</label>
+            <textarea name="message" id="message"></textarea>
+            <input type="file" name="ticket_file" id="ticket_file">
+            <button type="submit" class="support-submit">Создать тикет</button>
+        </form>
+    </div>
 
 </body>
 </html> 

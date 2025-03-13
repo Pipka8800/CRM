@@ -29,9 +29,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Теперь создаем тикет с полученным ID пользователя
-        $stmt = $DB->prepare("INSERT INTO tickets (type, message, clients, admin, created_at) 
-                             VALUES (?, ?, ?, NULL, NOW())");
-        $stmt->execute([$type, $message, $user['id']]);
+        $stmt = $DB->prepare("INSERT INTO tickets (type, message, clients, admin, created_at, file_path) 
+                             VALUES (?, ?, ?, NULL, NOW(), ?)");
+        
+        $filePathForDB = null; // По умолчанию путь к файлу null
+        
+        // Проверяем, был ли загружен файл
+        if (isset($_FILES['ticket_file']) && $_FILES['ticket_file']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = 'uploads/tickets/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileName = basename($_FILES['ticket_file']['name']);
+            $filePath = $uploadDir . $fileName;
+            
+            $counter = 1;
+            $fileInfo = pathinfo($filePath);
+            while (file_exists($filePath)) {
+                $fileName = $fileInfo['filename'] . '_' . $counter . '.' . $fileInfo['extension'];
+                $filePath = $uploadDir . $fileName;
+                $counter++;
+            }
+            
+            if (move_uploaded_file($_FILES['ticket_file']['tmp_name'], $filePath)) {
+                $filePathForDB = $filePath;
+            }
+        }
+        
+        $stmt->execute([$type, $message, $user['id'], $filePathForDB]);
         
         header('Location: ../../clients.php?ticket_status=success');
         exit;
