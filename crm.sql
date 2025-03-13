@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 10 2025 г., 05:57
+-- Время создания: Мар 13 2025 г., 03:56
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -285,6 +285,7 @@ INSERT INTO `ticket_messages` (`id`, `ticket_id`, `user_id`, `message`, `created
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
+  `type` enum('admin','tech') DEFAULT 'admin',
   `login` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -296,10 +297,10 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `login`, `password`, `name`, `surname`, `token`) VALUES
-(1, 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3Mzk0MjUxNDA='),
-(2, 'manager', 'manager456', 'Manager', '', ''),
-(3, 'sales', 'sales789', 'Sales Representative', '', '');
+INSERT INTO `users` (`id`, `type`, `login`, `password`, `name`, `surname`, `token`) VALUES
+(1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', NULL),
+(2, 'tech', 'manager', 'manager456', 'Manager', '', 'bG9naW49bWFuYWdlciZwYXNzd29yZD1tYW5hZ2VyNDU2JnVuaXF1ZT0xNzQxNzUzMzU2'),
+(3, 'admin', 'sales', 'sales789', 'Sales Representative', '', '');
 
 --
 -- Индексы сохранённых таблиц
