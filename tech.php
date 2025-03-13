@@ -33,6 +33,7 @@ if ($userType !== 'tech') {
     <link rel="stylesheet" href="styles/settings.css">
     <link rel="stylesheet" href="styles/pages/clients.css">
     <link rel="stylesheet" href="styles/modules/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles/modules/micromodal.css">
     <title>CRM | Тех</title>
 </head>
 <body>
@@ -174,7 +175,7 @@ if ($userType !== 'tech') {
                     if ($ticket['file_path']) {
                         echo "<div class='ticket-file'>
                             <button onclick='showFile(\"" . htmlspecialchars($ticket['file_path']) . "\")' class='file-view-btn'>
-                                <i class='fa fa-file'></i> Просмотреть файл
+                                <i class='fa fa-file-o'></i> Просмотреть файл
                             </button>
                         </div>";
                     }
@@ -188,85 +189,65 @@ if ($userType !== 'tech') {
 
     <div class="modal micromodal-slide" id="file-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-                <header class="modal__header">
-                    <h2 class="modal__title" id="modal-1-title">
-                        Просмотр файла
-                    </h2>
-                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
-                </header>
-                <main class="modal__content" id="modal-1-content">
-                    <div id="file-content"></div>
-                </main>
-            </div>
+          <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+            <header class="modal__header">
+              <h2 class="modal__title" id="modal-1-title">
+                Просмотр файла
+              </h2>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
+            <main class="modal__content" id="modal-1-content">
+                <div id="file-content"></div>
+            </main>
+          </div>
         </div>
     </div>
-
-    <style>
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 1000;
-    }
-
-    .modal.is-open {
-        display: block;
-    }
-
-    .modal__overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal__container {
-        background-color: #fff;
-        padding: 20px;
-        max-width: 80%;
-        max-height: 80vh;
-        border-radius: 4px;
-        overflow-y: auto;
-    }
-
-    .modal__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .modal__close {
-        background: transparent;
-        border: 0;
-        cursor: pointer;
-    }
-
-    .modal__content {
-        margin-bottom: 20px;
-    }
-    </style>
 
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Функция для остановки всех медиа элементов
+        function stopAllMedia() {
+            const mediaElements = document.querySelectorAll('video, audio');
+            mediaElements.forEach(media => {
+                media.pause();
+                media.currentTime = 0;
+            });
+        }
+
         // Инициализация MicroModal
         MicroModal.init({
             openTrigger: 'data-micromodal-trigger',
             closeTrigger: 'data-micromodal-close',
             disableScroll: true,
             awaitOpenAnimation: false,
-            awaitCloseAnimation: false
+            awaitCloseAnimation: false,
+            onClose: modal => {
+                stopAllMedia();
+            }
+        });
+
+        // Добавляем обработчики для всех способов закрытия
+        const modal = document.getElementById('file-modal');
+        const closeButton = modal.querySelector('.modal__close');
+        const overlay = modal.querySelector('.modal__overlay');
+
+        // Обработчик для кнопки закрытия (крестик)
+        closeButton.addEventListener('click', stopAllMedia);
+
+        // Обработчик для клика по оверлею (свободное место)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                stopAllMedia();
+            }
+        });
+
+        // Обработчик для клавиши Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.hasAttribute('aria-hidden')) {
+                stopAllMedia();
+            }
         });
     });
 
@@ -280,6 +261,18 @@ if ($userType !== 'tech') {
             fileContent.innerHTML = `<img src="${filePath}" style="max-width: 100%; height: auto;">`;
         } else if (['pdf'].includes(extension)) {
             fileContent.innerHTML = `<embed src="${filePath}" type="application/pdf" style="width: 100%; height: 600px;">`;
+        } else if (extension === 'mp4') {
+            fileContent.innerHTML = `
+                <video controls style="max-width: 100%; height: auto;">
+                    <source src="${filePath}" type="video/mp4">
+                    Ваш браузер не поддерживает видео тег.
+                </video>`;
+        } else if (extension === 'mp3') {
+            fileContent.innerHTML = `
+                <audio controls style="width: 100%;">
+                    <source src="${filePath}" type="audio/mpeg">
+                    Ваш браузер не поддерживает аудио тег.
+                </audio>`;
         } else {
             fileContent.innerHTML = `<a href="${filePath}" target="_blank" class="modal__btn">Скачать файл</a>`;
         }

@@ -48,10 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $extension = strtolower($fileInfo['extension']);
             
             // Список разрешенных расширений
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'mp3', 'mp4', 'doc', 'docx', 'txt'];
             
+            // Проверка расширения файла
             if (!in_array($extension, $allowedExtensions)) {
                 header('Location: ../../clients.php?ticket_status=invalid_file');
+                exit;
+            }
+            
+            // Проверка размера файла (максимум 50MB)
+            $maxFileSize = 50 * 1024 * 1024; // 50MB в байтах
+            if ($_FILES['ticket_file']['size'] > $maxFileSize) {
+                header('Location: ../../clients.php?ticket_status=file_too_large');
                 exit;
             }
             
