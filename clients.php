@@ -365,6 +365,27 @@ AuthCheck('', 'login.php');
             </div>
         </div>
     </div>
+    <div class="modal micromodal-slide" id="chat-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="chat-modal-title">
+                <header class="modal__header">
+                    <h2 class="modal__title" id="chat-modal-title">
+                        Чат
+                    </h2>
+                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="chat-modal-content">
+                    <div id="chat-messages" class="chat-messages"></div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Введите сообщение...">
+                        <button id="send-message" class="send-btn">
+                            <i class="fa fa-paper-plane"></i> Отправить
+                        </button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
 
@@ -385,6 +406,12 @@ AuthCheck('', 'login.php');
             <input type="file" name="ticket_file" id="ticket_file">
             <button type="submit" class="support-submit">Создать тикет</button>
         </form>
+        <button class="my-tickets-btn">Мои обращения</button>
+    </div>
+
+    <div class="my-tickets-container">
+        <h3>Мои обращения</h3>
+        <div class="tickets-list"></div>
     </div>
 
     <script> //скрипт для модалок отправки письма и редактирования, чтобы не открывались при загрузке страницы

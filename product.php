@@ -21,6 +21,7 @@ require_once 'api/helpers/InputDefaultValue.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/settings.css">
     <link rel="stylesheet" href="styles/pages/products.css">
+    <link rel="stylesheet" href="styles/pages/clients.css">
     <link rel="stylesheet" href="styles/modules/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="styles/modules/micromodal.css">
     <title>CRM | Товары</title>
@@ -287,6 +288,29 @@ require_once 'api/helpers/InputDefaultValue.php';
         </div>
     </div>
 
+    <!-- Модальное окно чата -->
+    <div class="modal micromodal-slide" id="chat-modal" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="chat-modal-title">
+                <header class="modal__header">
+                    <h2 class="modal__title" id="chat-modal-title">
+                        Чат
+                    </h2>
+                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="chat-modal-content">
+                    <div id="chat-messages" class="chat-messages"></div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Введите сообщение...">
+                        <button id="send-message" class="send-btn">
+                            <i class="fa fa-paper-plane"></i> Отправить
+                        </button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
 
@@ -318,6 +342,12 @@ require_once 'api/helpers/InputDefaultValue.php';
             <input type="file" name="ticket_file" id="ticket_file">
             <button type="submit" class="support-submit">Создать тикет</button>
         </form>
+        <button class="my-tickets-btn">Мои обращения</button>
+    </div>
+
+    <div class="my-tickets-container">
+        <h3>Мои обращения</h3>
+        <div class="tickets-list"></div>
     </div>
 
 </body>

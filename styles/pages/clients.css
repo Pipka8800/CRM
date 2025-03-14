@@ -1246,3 +1246,116 @@ td[data-email]:hover {
 .send-btn:hover {
     background-color: #1976D2;
 }
+
+/* Стили для кнопки "Мои обращения" */
+.my-tickets-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #4a76a8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.my-tickets-btn:hover {
+    background-color: #3d6393;
+}
+
+/* Контейнер для списка обращений */
+.my-tickets-container {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    z-index: 999;
+    display: none;
+}
+
+.my-tickets-container.active {
+    display: block;
+}
+
+.my-tickets-container h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.tickets-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.ticket-item {
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.ticket-item:last-child {
+    margin-bottom: 0;
+}
+
+.ticket-type {
+    font-weight: bold;
+    color: #4a76a8;
+    margin-bottom: 5px;
+}
+
+.ticket-status {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.ticket-status.waiting {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.ticket-status.work {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.ticket-status.complete {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.ticket-date {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.ticket-message {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.open-chat-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.open-chat-btn:hover {
+    background-color: #45a049;
+}

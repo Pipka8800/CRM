@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     try {
-        // Сначала получаем ID пользователя по токену
+        // Получаем ID пользователя по токену
         $stmt = $DB->prepare("SELECT id FROM users WHERE token = ?");
         $stmt->execute([$token]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,46 +28,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        // Теперь создаем тикет с полученным ID пользователя
-        $stmt = $DB->prepare("INSERT INTO tickets (type, message, clients, admin, created_at, file_path) 
-                             VALUES (?, ?, ?, NULL, NOW(), ?)");
+        // Создаем тикет с ID пользователя как клиента И как администратора
+        $stmt = $DB->prepare("INSERT INTO tickets (type, message, status, clients, admin, created_at, file_path) 
+                             VALUES (?, ?, 'waiting', ?, ?, NOW(), ?)");
         
-        $filePathForDB = null; // По умолчанию путь к файлу null
+        $filePathForDB = null;
         
         // Проверяем, был ли загружен файл
         if (isset($_FILES['ticket_file']) && $_FILES['ticket_file']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = '../../uploads/tickets/';
             
-            // Создаем директорию, если она не существует
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
             
-            // Получаем расширение файла
             $fileInfo = pathinfo($_FILES['ticket_file']['name']);
             $extension = strtolower($fileInfo['extension']);
             
-            // Список разрешенных расширений
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'mp3', 'mp4', 'doc', 'docx', 'txt'];
             
-            // Проверка расширения файла
             if (!in_array($extension, $allowedExtensions)) {
                 header('Location: ../../clients.php?ticket_status=invalid_file');
                 exit;
             }
             
-            // Проверка размера файла (максимум 50MB)
-            $maxFileSize = 50 * 1024 * 1024; // 50MB в байтах
+            $maxFileSize = 50 * 1024 * 1024; // 50MB
             if ($_FILES['ticket_file']['size'] > $maxFileSize) {
                 header('Location: ../../clients.php?ticket_status=file_too_large');
                 exit;
             }
             
-            // Генерируем уникальное имя файла
             $fileName = uniqid() . '_' . basename($_FILES['ticket_file']['name']);
             $filePath = $uploadDir . $fileName;
             
-            // Перемещаем загруженный файл
             if (move_uploaded_file($_FILES['ticket_file']['tmp_name'], $filePath)) {
                 $filePathForDB = 'uploads/tickets/' . $fileName;
             } else {
@@ -76,11 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        $stmt->execute([$type, $message, $user['id'], $filePathForDB]);
+        // Теперь передаем ID пользователя дважды - как clients и как admin
+        $stmt->execute([$type, $message, $user['id'], $user['id'], $filePathForDB]);
         
         header('Location: ../../clients.php?ticket_status=success');
         exit;
     } catch (PDOException $e) {
+        error_log('Ticket creation error: ' . $e->getMessage());
         header('Location: ../../clients.php?ticket_status=error');
         exit;
     }

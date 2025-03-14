@@ -179,8 +179,8 @@ if ($userType !== 'tech') {
                         </div>
                         <div class='ticket-type'>" . $ticketType . "</div>
                         <div class='ticket-message'><strong>Текст обращения:</strong> " . htmlspecialchars($ticket['message']) . "</div>
-                        <div class='ticket-client'><i class='fa fa-user'></i> " . htmlspecialchars($ticket['client_name']) . "</div>
-                        <div class='ticket-admin'><i class='fa fa-user-circle'></i> " . ($ticket['admin_name'] ? htmlspecialchars($ticket['admin_name']) : 'Не назначен') . "</div>
+                        <div class='ticket-client'><i class='fa fa-user'></i> " . ($ticket['client_name'] ? htmlspecialchars($ticket['client_name']) : 'Пользователь не назначен') . "</div>
+                        <div class='ticket-admin'><i class='fa fa-user-circle'></i> " . ($ticket['admin_name'] ? htmlspecialchars($ticket['admin_name']) : 'Админ не назначен') . "</div>
                         <div class='ticket-date'><i class='fa fa-calendar'></i> " . date('d.m.Y H:i', strtotime($ticket['created_at'])) . "</div>";
                     
                     // Добавляем кнопку чата перед кнопкой просмотра файла
