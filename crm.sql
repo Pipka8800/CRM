@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 13 2025 г., 03:56
+-- Время создания: Мар 14 2025 г., 02:21
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -240,20 +240,35 @@ CREATE TABLE `tickets` (
   `id` int(11) NOT NULL,
   `type` enum('tech','crm') NOT NULL,
   `message` varchar(256) DEFAULT NULL,
+  `status` enum('waiting','work','complete') NOT NULL,
   `clients` int(11) NOT NULL,
   `admin` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `file_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Дамп данных таблицы `tickets`
 --
 
-INSERT INTO `tickets` (`id`, `type`, `message`, `clients`, `admin`, `created_at`) VALUES
-(1, 'tech', 'как срать?', 2, 1, '2025-03-10 04:03:45'),
-(2, 'crm', 'crm гавно переделывай!', 6, 1, '2025-03-10 04:03:48'),
-(3, 'tech', 'БЛЯЯЯТЬ', 1, NULL, '2025-03-10 04:56:21'),
-(4, 'crm', 'Я ваш рот ебал', 1, NULL, '2025-03-10 04:56:58');
+INSERT INTO `tickets` (`id`, `type`, `message`, `status`, `clients`, `admin`, `created_at`, `file_path`) VALUES
+(1, 'tech', 'как срать?', 'waiting', 2, 1, '2025-03-10 04:03:45', NULL),
+(2, 'crm', 'crm гавно переделывай!', 'waiting', 6, 1, '2025-03-10 04:03:48', NULL),
+(3, 'tech', 'БЛЯЯЯТЬ', 'work', 1, NULL, '2025-03-10 04:56:21', NULL),
+(4, 'crm', 'Я ваш рот ебал', 'complete', 1, NULL, '2025-03-10 04:56:58', NULL),
+(5, 'crm', 'Ваш кал не работает', 'work', 2, NULL, '2025-03-13 04:01:07', NULL),
+(6, 'tech', 'Дай денег на ноут', 'work', 2, NULL, '2025-03-13 04:05:58', NULL),
+(7, 'crm', 'Фу, покажи(', 'waiting', 2, NULL, '2025-03-13 04:06:09', NULL),
+(8, 'tech', 'НЕ РАБИЕТ!', 'waiting', 2, NULL, '2025-03-13 04:06:45', NULL),
+(9, 'crm', 'ГДЕ ИНТЕРФАК?', 'complete', 2, NULL, '2025-03-13 04:07:00', NULL),
+(10, 'tech', 'Хахахах, разраб лох не работает!', 'waiting', 2, NULL, '2025-03-13 04:07:19', NULL),
+(11, 'crm', 'Где кнопки?', 'complete', 2, NULL, '2025-03-13 04:07:25', NULL),
+(12, 'tech', 'ЧТо это такое, почему вылазит всякая АНИМЕШНАЯ ХУЙНЯ!\r\nЯ НЕ СМОТРЮ АНИМЕ У МЕНЯ ДЕД МУСУЛЬМАНЕН!', 'complete', 2, NULL, '2025-03-13 04:07:53', NULL),
+(31, 'tech', 'НЕГР', 'work', 2, NULL, '2025-03-13 07:35:59', 'uploads/tickets/67d28adf0a26c_70c72df306756b04dba9a50076cd8edd8619fb5d_full.jpg'),
+(32, 'tech', 'кто тже это?', 'work', 2, NULL, '2025-03-13 07:43:14', 'uploads/tickets/67d28c92e607c_1498538061_Ngx8j.jpg'),
+(34, 'crm', 'ГИфка', 'work', 2, NULL, '2025-03-13 10:33:12', 'uploads/tickets/67d2b468953e6_updating.gif'),
+(35, 'tech', 'БУМ', 'waiting', 2, NULL, '2025-03-13 10:34:06', 'uploads/tickets/67d2b49e7cc2c_Взрыв для кружка в тг.mp4'),
+(36, 'tech', '-яндекс гаи', 'waiting', 2, NULL, '2025-03-13 10:41:48', 'uploads/tickets/67d2b66c25152_Counter-strike 2 2025.03.12 - 20.29.18.17.DVR.mp4');
 
 -- --------------------------------------------------------
 
@@ -275,7 +290,8 @@ CREATE TABLE `ticket_messages` (
 
 INSERT INTO `ticket_messages` (`id`, `ticket_id`, `user_id`, `message`, `created_at`) VALUES
 (1, 1, 1, 'Поч?', '2025-03-10 04:11:25'),
-(2, 2, 1, 'Ты даун, сосал?!', '2025-03-10 04:11:27');
+(2, 2, 1, 'Ты даун, сосал?!', '2025-03-10 04:11:27'),
+(3, 36, 2, 'А вы в курсе, админ даун?', '2025-03-13 10:56:06');
 
 -- --------------------------------------------------------
 
@@ -299,7 +315,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `type`, `login`, `password`, `name`, `surname`, `token`) VALUES
 (1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', NULL),
-(2, 'tech', 'manager', 'manager456', 'Manager', '', 'bG9naW49bWFuYWdlciZwYXNzd29yZD1tYW5hZ2VyNDU2JnVuaXF1ZT0xNzQxNzUzMzU2'),
+(2, 'tech', 'manager', 'manager456', 'Manager', '', 'bG9naW49bWFuYWdlciZwYXNzd29yZD1tYW5hZ2VyNDU2JnVuaXF1ZT0xNzQxOTE0NzU1'),
 (3, 'admin', 'sales', 'sales789', 'Sales Representative', '', '');
 
 --
@@ -386,13 +402,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT для таблицы `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT для таблицы `ticket_messages`
 --
 ALTER TABLE `ticket_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
