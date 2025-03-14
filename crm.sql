@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 14 2025 г., 02:21
+-- Время создания: Мар 14 2025 г., 07:36
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -268,7 +268,10 @@ INSERT INTO `tickets` (`id`, `type`, `message`, `status`, `clients`, `admin`, `c
 (32, 'tech', 'кто тже это?', 'work', 2, NULL, '2025-03-13 07:43:14', 'uploads/tickets/67d28c92e607c_1498538061_Ngx8j.jpg'),
 (34, 'crm', 'ГИфка', 'work', 2, NULL, '2025-03-13 10:33:12', 'uploads/tickets/67d2b468953e6_updating.gif'),
 (35, 'tech', 'БУМ', 'waiting', 2, NULL, '2025-03-13 10:34:06', 'uploads/tickets/67d2b49e7cc2c_Взрыв для кружка в тг.mp4'),
-(36, 'tech', '-яндекс гаи', 'waiting', 2, NULL, '2025-03-13 10:41:48', 'uploads/tickets/67d2b66c25152_Counter-strike 2 2025.03.12 - 20.29.18.17.DVR.mp4');
+(36, 'tech', '-яндекс гаи', 'waiting', 2, NULL, '2025-03-13 10:41:48', 'uploads/tickets/67d2b66c25152_Counter-strike 2 2025.03.12 - 20.29.18.17.DVR.mp4'),
+(40, 'crm', 'ХУЙ', 'waiting', 2, NULL, '2025-03-14 01:34:06', NULL),
+(41, 'crm', 'КАКАШКИ', 'waiting', 2, 2, '2025-03-14 01:37:52', NULL),
+(42, 'tech', 'Фулл есть? А если найду', 'waiting', 1, 1, '2025-03-14 01:38:18', NULL);
 
 -- --------------------------------------------------------
 
@@ -291,7 +294,16 @@ CREATE TABLE `ticket_messages` (
 INSERT INTO `ticket_messages` (`id`, `ticket_id`, `user_id`, `message`, `created_at`) VALUES
 (1, 1, 1, 'Поч?', '2025-03-10 04:11:25'),
 (2, 2, 1, 'Ты даун, сосал?!', '2025-03-10 04:11:27'),
-(3, 36, 2, 'А вы в курсе, админ даун?', '2025-03-13 10:56:06');
+(3, 36, 2, 'А вы в курсе, админ даун?', '2025-03-13 10:56:06'),
+(4, 41, 2, 'Вкусные', '2025-03-14 02:28:41'),
+(5, 40, 2, 'ТЫ КОМУ ХУЙ ПИШЕШЬ ДАУН ОБОССАНЫЙ!', '2025-03-14 02:30:56'),
+(6, 42, 2, 'админ не лох', '2025-03-14 03:37:57'),
+(7, 41, 2, 'Бибка', '2025-03-14 06:21:28'),
+(8, 41, 2, 'Скинь титьки', '2025-03-14 06:25:57'),
+(9, 5, 2, 'ВАШ КАЛ НЕ РОБИЕТ', '2025-03-14 06:27:09'),
+(10, 42, 1, 'Спасибо, дура)', '2025-03-14 06:31:18'),
+(11, 42, 1, 'Сиськи)', '2025-03-14 06:31:29'),
+(12, 40, 1, 'МАМЕ ТВОЕЙ ЗАСЕРЫШ!', '2025-03-14 06:35:38');
 
 -- --------------------------------------------------------
 
@@ -314,8 +326,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `type`, `login`, `password`, `name`, `surname`, `token`) VALUES
-(1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', NULL),
-(2, 'tech', 'manager', 'manager456', 'Manager', '', 'bG9naW49bWFuYWdlciZwYXNzd29yZD1tYW5hZ2VyNDU2JnVuaXF1ZT0xNzQxOTE0NzU1'),
+(1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3NDE5MzQxMjM='),
+(2, 'tech', 'manager', 'manager456', 'Manager', '', NULL),
 (3, 'admin', 'sales', 'sales789', 'Sales Representative', '', '');
 
 --
@@ -402,13 +414,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT для таблицы `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT для таблицы `ticket_messages`
 --
 ALTER TABLE `ticket_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

@@ -80,6 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('api/tickets/GetMyTickets.php')
             .then(response => response.json())
             .then(tickets => {
+                const ticketsList = document.querySelector('.tickets-list');
+                if (!tickets.length) {
+                    ticketsList.innerHTML = '<p>Нет активных обращений</p>';
+                    return;
+                }
+                
                 ticketsList.innerHTML = tickets.map(ticket => `
                     <div class="ticket-item">
                         <div class="ticket-type">${ticket.type === 'tech' ? 'Техническая неполадка' : 'Проблема с CRM'}</div>
@@ -135,11 +141,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 chatMessages.innerHTML = '';
                 data.forEach(message => {
                     const messageTime = new Date(message.created_at).toLocaleString();
+                    const messageClass = message.sender_type === 'admin' ? 'admin' : 'tech';
+                    const senderLabel = message.sender_type === 'admin' ? 'Администратор' : 'Техподдержка';
+                    
                     chatMessages.innerHTML += `
-                        <div class="chat-message">
-                            <strong>${message.sender_name}:</strong> 
+                        <div class="chat-message ${messageClass}">
+                            <div class="message-sender">${senderLabel}</div>
                             ${message.message}
-                            <span class="message-time">(${messageTime})</span>
+                            <span class="message-time">${messageTime}</span>
                         </div>`;
                 });
                 chatMessages.scrollTop = chatMessages.scrollHeight;

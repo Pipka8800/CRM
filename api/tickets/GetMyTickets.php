@@ -10,8 +10,8 @@ try {
         throw new Exception('Пользователь не авторизован');
     }
 
-    // Получаем ID пользователя по токену
-    $stmt = $DB->prepare("SELECT id FROM users WHERE token = ?");
+    // Получаем информацию о пользователе
+    $stmt = $DB->prepare("SELECT id, type FROM users WHERE token = ?");
     $stmt->execute([$_SESSION['token']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -19,21 +19,33 @@ try {
         throw new Exception('Пользователь не найден');
     }
 
-    // Получаем все тикеты пользователя
-    $stmt = $DB->prepare("
-        SELECT id, type, message, status, created_at 
-        FROM tickets 
-        WHERE clients = ? 
-        ORDER BY created_at DESC
-    ");
-    $stmt->execute([$user['id']]);
-    $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // В зависимости от типа пользователя формируем запрос
+    if ($user['type'] === 'tech' || $user['type'] === 'admin') {
+        // Для техподдержки и администраторов показываем все тикеты
+        $query = "SELECT t.*, u.name as client_name 
+                 FROM tickets t 
+                 LEFT JOIN users u ON t.clients = u.id 
+                 ORDER BY t.created_at DESC";
+        $stmt = $DB->prepare($query);
+        $stmt->execute();
+    } else {
+        // Для обычных пользователей показываем только их тикеты
+        $query = "SELECT t.*, u.name as client_name 
+                 FROM tickets t 
+                 LEFT JOIN users u ON t.clients = u.id 
+                 WHERE t.clients = ? 
+                 ORDER BY t.created_at DESC";
+        $stmt = $DB->prepare($query);
+        $stmt->execute([$user['id']]);
+    }
 
+    $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($tickets);
 
 } catch (Exception $e) {
+    error_log('GetMyTickets error: ' . $e->getMessage());
     echo json_encode([
-        'error' => true,
+        'success' => false,
         'message' => $e->getMessage()
     ]);
 } 

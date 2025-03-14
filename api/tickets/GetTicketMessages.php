@@ -3,7 +3,7 @@ require_once '../DB.php';
 session_start();
 
 $ticketId = $_GET['ticket_id'];
-$query = "SELECT tm.*, u.name as sender_name 
+$query = "SELECT tm.*, u.name as sender_name, u.type as sender_type 
           FROM ticket_messages tm
           LEFT JOIN users u ON tm.user_id = u.id
           WHERE tm.ticket_id = ?

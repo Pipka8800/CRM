@@ -308,11 +308,14 @@ if ($userType !== 'tech') {
                     chatMessages.innerHTML = '';
                     data.forEach(message => {
                         const messageTime = new Date(message.created_at).toLocaleString();
+                        const messageClass = message.sender_type === 'admin' ? 'admin' : 'tech';
+                        const senderLabel = message.sender_type === 'admin' ? 'Администратор' : 'Техподдержка';
+                        
                         chatMessages.innerHTML += `
-                            <div class="chat-message">
-                                <strong>${message.sender_name}:</strong> 
+                            <div class="chat-message ${messageClass}">
+                                <div class="message-sender">${senderLabel}</div>
                                 ${message.message}
-                                <span class="message-time">(${messageTime})</span>
+                                <span class="message-time">${messageTime}</span>
                             </div>`;
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
