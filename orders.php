@@ -420,16 +420,28 @@ if (isset($_SESSION['search_status'])) {
             </div>
         </div>
     </div>
-    <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    <script defer src="scripts/initClientsModal.js"></script>
-
-    <script defer src="scripts/orders.js"></script>
+    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+    <script src="scripts/initClientsModal.js"></script>
+    <script src="scripts/orders.js"></script>
     <script>
-    function editOrder(id, status) {
-        document.getElementById('edit-id').value = id;
-        document.getElementById('edit-status').value = status;
-        MicroModal.show('edit-modal');
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            MicroModal.init({
+                disableScroll: true,
+                awaitOpenAnimation: false,
+                awaitCloseAnimation: false
+            });
+            
+            function editOrder(id, status) {
+                document.getElementById('edit-id').value = id;
+                document.getElementById('edit-status').value = status;
+                MicroModal.show('edit-modal');
+            }
+            
+            // Инициализация модального окна с ошибкой
+            if (document.querySelector('#error-modal.is-open')) {
+                MicroModal.show('error-modal');
+            }
+        });
     </script>
 
     <!-- техподдержка -->
@@ -479,15 +491,5 @@ if (isset($_SESSION['search_status'])) {
             </div>
         </div>
     </div>
-
-    <!-- Добавляем скрипт для инициализации модального окна с ошибкой -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.querySelector('#error-modal.is-open')) {
-                MicroModal.init();
-                MicroModal.show('error-modal');
-            }
-        });
-    </script>
 </body>
 </html>

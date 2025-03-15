@@ -311,8 +311,18 @@ require_once 'api/helpers/InputDefaultValue.php';
         </div>
     </div>
 
-    <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    <script defer src="scripts/initClientsModal.js"></script>
+    <!-- Скрипты должны быть в правильном порядке -->
+    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+    <script src="scripts/initClientsModal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            MicroModal.init({
+                disableScroll: true,
+                awaitOpenAnimation: false,
+                awaitCloseAnimation: false
+            });
+        });
+    </script>
 
     <script>
     function editProduct(id, name, description, price, quantity) {

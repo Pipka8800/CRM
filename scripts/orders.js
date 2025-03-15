@@ -30,4 +30,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Обновляем URL и перезагружаем страницу
         window.location.href = currentUrl.toString();
     });
+
+    // Находим все кнопки редактирования
+    const editButtons = document.querySelectorAll('.edit-order-btn');
+    
+    // Добавляем обработчик для каждой кнопки
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-id');
+            const orderStatus = this.getAttribute('data-status');
+            editOrder(orderId, orderStatus);
+        });
+    });
 });
+
+// Функция для открытия модального окна редактирования
+function editOrder(id, status) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-status').value = status;
+    MicroModal.show('edit-modal');
+}

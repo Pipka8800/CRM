@@ -318,7 +318,7 @@ AuthCheck('', 'login.php');
         </div>
     </div>
     <div class="modal micromodal-slide<?php
-        if (isset($_GET['send-email']) && !empty($_GET['send-email'])) {echo ' open';}?>
+        if (isset($_GET['send-email']) && !empty($_GET['send-email'])) {echo ' is-  open';}?>
     " id="send-email-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
             <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
@@ -388,6 +388,15 @@ AuthCheck('', 'login.php');
     </div>
     <script defer src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script defer src="scripts/initClientsModal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            MicroModal.init({
+                disableScroll: true,
+                awaitOpenAnimation: false,
+                awaitCloseAnimation: false
+            });
+        });
+    </script>
 
     <!-- техподдержка -->
     <button class="support-btn">

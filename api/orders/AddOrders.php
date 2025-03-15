@@ -72,61 +72,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     //код акции (code_promo)
-    $promo = $_POST['promo'];
+    $promo = $_POST['promo'] ?? '';
     $promoInfo = []; // информация о акции
+    $promotion_id = null;
 
-    // 1. получить информацию о акции и записать в promoInfo (по code_promo)
-    // 2. проверить активна ли акция (uses < max_uses, cancel_at < текущей даты)
+    // Проверяем промокод только если он был введен
+    if (!empty($promo)) {
+        // 1. получить информацию о акции и записать в promoInfo (по code_promo)
+        // 2. проверить активна ли акция (uses < max_uses, cancel_at < текущей даты)
+        $promoInfo = $DB->query(   
+            "SELECT * FROM promotions WHERE code_promo = '$promo'" 
+            )->fetchALL();
 
-    $promoInfo = $DB->query(   
-        "SELECT * FROM promotions WHERE code_promo = '$promo'" 
-        )->fetchALL();
+        if (empty($promoInfo)) {
+            $_SESSION['orders_error'] = 'Промокод не существует';
+            header('Location: ../../orders.php');
+            exit;
+        }
 
-    if (empty($promoInfo)) {
-        $_SESSION['orders_error'] = 'Промокод не существует';
-        header('Location: ../../orders.php');
-        exit;
+        if ($promoInfo[0]['uses'] >= $promoInfo[0]['max_uses']) {
+            $_SESSION['orders_error'] = 'Акция закончена';
+            header('Location: ../../orders.php');
+            exit;
+        }
+
+        // Получаем promotion_id из таблицы promotions только если промокод валиден
+        $promotion_id = $promoInfo[0]['id'];
     }
 
-    if ($promoInfo[0]['uses'] >= $promoInfo[0]['max_uses']) {
-        $_SESSION['orders_error'] = 'Акция закончена';
-        header('Location: ../../orders.php');
-        exit;
-    }
-
-    $stmt = $DB->prepare(
-        "INSERT INTO orders (id, client_id, total, admin) VALUES (?, ?, ?, ?)");
-    $stmt->execute([
-        $orders['id'],
-        $orders['client_id'],
-        $orders['total'],
-        $orders['admin'],
-    ]);
-
-    // 2. Добавление элементов заказа в order_items
-    $stmt = $DB->prepare(
-        "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)"
-    );
-
-    foreach ($products as $product_id) {
-        // Находим информацию о продукте
-        $productInfo = array_filter($allProducts, function($p) use ($product_id) {
-            return $p['id'] == $product_id;
-        });
-        $productInfo = reset($productInfo);
-
-        // Добавляем запись в order_items
-        $stmt->execute([
-            $orders['id'],      // order_id
-            $product_id,        // product_id
-            1,                  // quantity (по умолчанию 1)
-            $productInfo['price'] // price
+    try {
+        $stmt = $DB->prepare(
+            "INSERT INTO orders (id, client_id, order_date, total, status, admin, promotion_id) 
+             VALUES (?, ?, NOW(), ?, 1, ?, ?)"
+        );
+        $result = $stmt->execute([
+            $orders['id'],
+            $clientID,
+            $total,
+            $adminID,
+            $promotion_id
         ]);
-    }
 
-    // Редирект на страницу заказов после успешного создания
-    header('Location: ../../orders.php');
-    exit;
+        if (!$result) {
+            throw new Exception('Ошибка при добавлении заказа');
+        }
+
+        // Обновляем количество использований промокода
+        if ($promotion_id) {
+            $stmt = $DB->prepare("UPDATE promotions SET uses = uses + 1 WHERE id = ?");
+            $stmt->execute([$promotion_id]);
+        }
+
+        // 2. Добавление элементов заказа в order_items
+        $stmt = $DB->prepare(
+            "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)"
+        );
+
+        foreach ($products as $product_id) {
+            // Находим информацию о продукте
+            $productInfo = array_filter($allProducts, function($p) use ($product_id) {
+                return $p['id'] == $product_id;
+            });
+            $productInfo = reset($productInfo);
+
+            // Добавляем запись в order_items
+            $stmt->execute([
+                $orders['id'],      // order_id
+                $product_id,        // product_id
+                1,                  // quantity (по умолчанию 1)
+                $productInfo['price'] // price
+            ]);
+        }
+
+        // Редирект на страницу заказов после успешного создания
+        header('Location: ../../orders.php');
+        exit;
+
+    } catch (Exception $e) {
+        $_SESSION['orders_error'] = 'Ошибка при создании заказа: ' . $e->getMessage();
+        header('Location: ../../orders.php');
+        exit;
+    }
 
 } else {
     echo json_encode(['error' => 'Invalid method']);

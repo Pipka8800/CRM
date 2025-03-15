@@ -24,7 +24,13 @@ function OutputOrders($orders) {
         echo "<td>{$order_items}</td>";
         echo "<td>{$status}</td>";
         echo "<td> <a href='api/orders/generateCheack.php?id=$id'><i class='fa fa-qrcode'></i></a></td>";
-        echo "<td onclick=\"editOrder({$order['id']}, '{$status}')\"><i class='fa fa-pencil'></i></td>";
+        echo "<td>
+                <button class='edit-order-btn' 
+                        data-id='{$order['id']}' 
+                        data-status='{$order['status']}'>
+                    <i class='fa fa-pencil'></i>
+                </button>
+              </td>";
         echo "<td><a href='api/orders/OrdersDelete.php?id={$order['id']}'><i class='fa fa-trash'></i></a></td>";
         echo "</tr>";
     }
