@@ -71,6 +71,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'admin' => $adminID,
     ];
 
+    //код акции (code_promo)
+    $promo = $_POST['promo'];
+    $promoInfo = []; // информация о акции
+
+    // 1. получить информацию о акции и записать в promoInfo (по code_promo)
+    // 2. проверить активна ли акция (uses < max_uses, cancel_at < текущей даты)
+
+    $promoInfo = $DB->query(   
+        "SELECT * FROM promotions WHERE code_promo = '$promo'" 
+        )->fetchALL();
+
+    if (empty($promoInfo)) {
+        $_SESSION['orders_error'] = 'Промокод не существует';
+        header('Location: ../../orders.php');
+        exit;
+    }
+
+    if ($promoInfo[0]['uses'] >= $promoInfo[0]['max_uses']) {
+        $_SESSION['orders_error'] = 'Акция закончена';
+        header('Location: ../../orders.php');
+        exit;
+    }
+
     $stmt = $DB->prepare(
         "INSERT INTO orders (id, client_id, total, admin) VALUES (?, ?, ?, ?)");
     $stmt->execute([

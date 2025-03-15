@@ -264,6 +264,10 @@ if (isset($_SESSION['search_status'])) {
                             ?>
                         </select>
                     </div>
+                    <div class="modal__form-group">
+                        <label for="promo">Промокод</label>
+                        <input type="text" id="promo" name="promo" placeholder="Введите промокод...">
+                    </div>
                     <div class="modal__form-actions">
                         <button type="submit" class="modal__btn modal__btn-primary">Создать</button>
                         <button type="button" class="modal__btn modal__btn-secondary" data-micromodal-close>Отменить</button>
@@ -392,7 +396,7 @@ if (isset($_SESSION['search_status'])) {
         <?php
         if (isset($_SESSION['orders_error']) && 
         !empty($_SESSION['orders_error'])) {
-            echo 'open';
+            echo 'is-open';
         }
         ?>
     " id="error-modal" aria-hidden="true">
@@ -409,8 +413,7 @@ if (isset($_SESSION['search_status'])) {
                 if (isset($_SESSION['orders_error'])
                 && !empty($_SESSION['orders_error'])) {
                     echo $_SESSION['orders_error'];
-
-                    $_SESSION['orders_error'] = '';
+                    unset($_SESSION['orders_error']);
                 }
                 ?>
                 </main>
@@ -476,5 +479,15 @@ if (isset($_SESSION['search_status'])) {
             </div>
         </div>
     </div>
+
+    <!-- Добавляем скрипт для инициализации модального окна с ошибкой -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.querySelector('#error-modal.is-open')) {
+                MicroModal.init();
+                MicroModal.show('error-modal');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 14 2025 г., 07:36
+-- Время создания: Мар 15 2025 г., 04:11
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -233,6 +233,32 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `promotions`
+--
+
+CREATE TABLE `promotions` (
+  `id` int(11) NOT NULL,
+  `path_to_image` varchar(256) DEFAULT NULL,
+  `title` varchar(256) NOT NULL,
+  `body` varchar(256) NOT NULL,
+  `code_promo` varchar(256) NOT NULL,
+  `discount` int(11) NOT NULL DEFAULT 0,
+  `uses` int(11) NOT NULL,
+  `max_uses` int(11) NOT NULL,
+  `cancel_at` date NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `promotions`
+--
+
+INSERT INTO `promotions` (`id`, `path_to_image`, `title`, `body`, `code_promo`, `discount`, `uses`, `max_uses`, `cancel_at`, `created_at`) VALUES
+(1, 'piski.png', 'Весенняя распродажа!', 'Бесплатные дилдо!', 'VES25', 15, 1, 100, '2025-03-15', '2025-03-15 02:53:10');
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `tickets`
 --
 
@@ -326,7 +352,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `type`, `login`, `password`, `name`, `surname`, `token`) VALUES
-(1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3NDE5MzQxMjM='),
+(1, 'admin', 'admin', 'admin123', 'Administrator', 'kitchen', 'bG9naW49YWRtaW4mcGFzc3dvcmQ9YWRtaW4xMjMmdW5pcXVlPTE3NDIwMDc1NzI='),
 (2, 'tech', 'manager', 'manager456', 'Manager', '', NULL),
 (3, 'admin', 'sales', 'sales789', 'Sales Representative', '', '');
 
@@ -361,6 +387,12 @@ ALTER TABLE `order_items`
 -- Индексы таблицы `products`
 --
 ALTER TABLE `products`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `promotions`
+--
+ALTER TABLE `promotions`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -409,6 +441,12 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT для таблицы `promotions`
+--
+ALTER TABLE `promotions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `tickets`
