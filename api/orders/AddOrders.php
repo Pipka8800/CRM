@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'client_id' => $clientID,
         'total' => $total,
         'admin' => $adminID,
+        'status' => 1  // добавляем статус активного заказа
     ];
 
     //код акции (code_promo)
@@ -103,12 +104,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt = $DB->prepare(
             "INSERT INTO orders (id, client_id, order_date, total, status, admin, promotion_id) 
-             VALUES (?, ?, NOW(), ?, 1, ?, ?)"
+             VALUES (?, ?, NOW(), ?, ?, ?, ?)"
         );
         $result = $stmt->execute([
             $orders['id'],
             $clientID,
             $total,
+            $orders['status'],  // передаем статус в запрос
             $adminID,
             $promotion_id
         ]);
