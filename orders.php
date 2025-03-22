@@ -75,6 +75,7 @@ if (isset($_SESSION['search_status'])) {
                 <li><a href="clients.php">Клиенты</a></li>
                 <li><a href="product.php">Товары</a></li>
                 <li><a href="orders.php">Заказы</a></li>
+                <li><a href="promotions.php">Акции</a></li>
                 <?php
                     require_once 'api/helpers/getUserType.php';
                     $userType = getUserType($DB);
@@ -143,18 +144,21 @@ if (isset($_SESSION['search_status'])) {
                             require_once 'api/orders/OutputOrders.php';
                             require_once 'api/orders/OrdersSearch.php';
 
-                            // Подсчет общего количества записей с учетом фильтров
+                            // Пагинация
+                            $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $maxOrders = 5; // Количество заказов на странице
+
+                            // Подсчет общего количества заказов с учетом фильтров
                             $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
                             $whereClause = "";
                             if (!empty($search)) {
-                                $whereClause = "WHERE (LOWER(clients.name) LIKE '%$search%' OR LOWER(products.name) LIKE '%$search%')";
+                                $searchField = isset($_GET['search_name']) ? $_GET['search_name'] : 'client.name';
+                                $whereClause = "WHERE (LOWER($searchField) LIKE '%$search%')";
                             }
 
-                            // Добавляем условие статуса для подсчета
-                            if ($_SESSION["search_status"] == '1') {
-                                $whereClause = $whereClause ? $whereClause . " AND orders.status = '1'" : "WHERE orders.status = 1";
-                            } elseif ($_SESSION["search_status"] == '0') {
-                                $whereClause = $whereClause ? $whereClause . " AND orders.status = '0'" : "WHERE orders.status = 0";
+                            // Добавляем условие статуса
+                            if (isset($_SESSION["search_status"]) && $_SESSION["search_status"] != 'all') {
+                                $whereClause = $whereClause ? $whereClause . " AND orders.status = '{$_SESSION["search_status"]}'" : "WHERE orders.status = '{$_SESSION["search_status"]}'";
                             }
 
                             $countQuery = "SELECT COUNT(DISTINCT orders.id) as count 
@@ -166,18 +170,10 @@ if (isset($_SESSION['search_status'])) {
 
                             $countOrders = $DB->query($countQuery)->fetchAll()[0]['count'];
 
-                            $per_page = 5; // Количество записей на странице
-                            $maxPage = ceil($countOrders / $per_page);
-                            $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $maxPage = ceil($countOrders / $maxOrders);
+                            $minPage = 1;
 
-                            // Проверка и корректировка текущей страницы
-                            if ($currentPage < 1) {
-                                $currentPage = 1;
-                            } elseif ($currentPage > $maxPage) {
-                                $currentPage = $maxPage;
-                            }
-
-                            // Build pagination URL with preserved search parameters
+                            // Prepare search parameters for pagination URLs
                             $searchParams = '';
                             if (isset($_GET['search_name'])) {
                                 $searchParams .= '&search_name=' . urlencode($_GET['search_name']);
@@ -188,31 +184,51 @@ if (isset($_SESSION['search_status'])) {
                             if (isset($_GET['sort'])) {
                                 $searchParams .= '&sort=' . urlencode($_GET['sort']);
                             }
-
-                            // Wrap pagination in container
-                            echo "<div class='pagination-container'>";
-                            
-                            // Кнопка "Предыдущая"
-                            $prevDisabled = ($currentPage <= 1) ? " disabled" : "";
-                            $prevPage = $currentPage - 1;
-                            echo "<a href='?page=$prevPage$searchParams'$prevDisabled><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
-
-                            // Номера страниц
-                            echo "<div class='pagination'>";
-                            for ($i = 1; $i <= $maxPage; $i++) {
-                                $activeClass = ($i === $currentPage) ? " class='active'" : "";
-                                echo "<a href='?page=$i$searchParams'$activeClass>$i</a>";
+                            if (isset($_SESSION['search_status'])) {
+                                $searchParams .= '&search_status=' . urlencode($_SESSION['search_status']);
                             }
-                            echo "</div>";
 
-                            // Кнопка "Следующая"
-                            $nextDisabled = ($currentPage >= $maxPage) ? " disabled" : "";
-                            $nextPage = $currentPage + 1;
-                            echo "<a href='?page=$nextPage$searchParams'$nextDisabled><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+                            // Нормализация currentPage
+                            if ($currentPage < $minPage || !is_numeric($currentPage)) {
+                                $currentPage = $minPage;
+                                header("Location: ?page=$currentPage" . $searchParams);
+                                exit;
+                            }
+                            if ($currentPage > $maxPage && $maxPage > 0) {
+                                $currentPage = $maxPage;
+                                header("Location: ?page=$currentPage" . $searchParams);
+                                exit;
+                            }
 
-                            echo "</div>";
+                            $offset = ($currentPage - 1) * $maxOrders;
 
-                            $orders = OrdersSearch($_GET, $DB);
+                            // Отображение пагинации
+                            if ($maxPage > 1) {
+                                echo '<div class="pagination-container">';
+                                
+                                // Кнопка "Предыдущая"
+                                $prevDisabled = ($currentPage <= $minPage) ? " disabled" : "";
+                                $Prev = $currentPage - 1;
+                                echo "<a href='?page=$Prev" . $searchParams . "'$prevDisabled><i class='fa fa-arrow-left' aria-hidden='true'></i></a>";
+                                
+                                // Нумерованные кнопки
+                                echo "<div class='pagination'>";
+                                for ($i = 1; $i <= $maxPage; $i++) {
+                                    $activeClass = ($i === $currentPage) ? " class='active'" : "";
+                                    echo "<a href='?page=$i" . $searchParams . "'$activeClass>$i</a>";
+                                }
+                                echo "</div>";
+                                
+                                // Кнопка "Следующая"
+                                $nextDisabled = ($currentPage >= $maxPage) ? " disabled" : "";
+                                $Next = $currentPage + 1;
+                                echo "<a href='?page=$Next" . $searchParams . "'$nextDisabled><i class='fa fa-arrow-right' aria-hidden='true'></i></a>";
+                                
+                                echo '</div>';
+                            }
+
+                            // Получение заказов с пагинацией
+                            $orders = OrdersSearch($_GET, $DB, $offset, $maxOrders);
                             OutputOrders($orders);
                         ?>
                     </tbody>
@@ -295,30 +311,30 @@ if (isset($_SESSION['search_status'])) {
     <div class="modal micromodal-slide" id="edit-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
             <div class="modal__container" role="dialog" aria-modal="true">
-                <header class="modal__header">
+            <header class="modal__header">
                     <h2 class="modal__title">Редактировать заказ</h2>
-                    <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
-                </header>
+              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+            </header>
                 <main class="modal__content">
                     <form action="api/orders/EditOrder.php" method="POST" class="modal__form">
                         <input type="hidden" name="id" id="edit-id">
-                        <div class="modal__form-group">
+                    <div class="modal__form-group">
                             <label for="status">Статус</label>
                             <select name="status" id="edit-status">
                                 <option value="1">Активный</option>
                                 <option value="0">Неактивный</option>
                             </select>
-                        </div>
-                        <div class="modal__form-actions">
+                    </div>
+                    <div class="modal__form-actions">
                             <button type="submit" class="modal__btn modal__btn-primary">Сохранить</button>
-                            <button type="button" class="modal__btn" data-micromodal-close>Отменить</button>
-                        </div>
-                    </form>
-                </main>
-            </div>
+                        <button type="button" class="modal__btn" data-micromodal-close>Отменить</button>
+                    </div>
+                </form>
+            </main>
+          </div>
         </div>
-    </div>
-    <div class="modal micromodal-slide" id="history-modal" aria-hidden="true">
+      </div>
+      <div class="modal micromodal-slide" id="history-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
             <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
                 <header class="modal__header">
@@ -440,6 +456,26 @@ if (isset($_SESSION['search_status'])) {
             // Инициализация модального окна с ошибкой
             if (document.querySelector('#error-modal.is-open')) {
                 MicroModal.show('error-modal');
+            }
+
+            function showOrderDetails(orderId, clientName, orderDate, total, items, discount) {
+                document.getElementById('order-id').textContent = orderId;
+                document.getElementById('client-name').textContent = clientName;
+                document.getElementById('order-date').textContent = orderDate;
+                
+                // Корректное отображение цены с учетом скидки
+                const totalElement = document.getElementById('order-total');
+                if (discount && discount > 0) {
+                    const originalPrice = total * (100 / (100 - discount));
+                    totalElement.innerHTML = `${total} <span class="original-price">${originalPrice.toFixed(2)}</span>`;
+                } else {
+                    totalElement.textContent = total;
+                }
+                
+                // Заполняем таблицу товаров
+                // ...
+                
+                MicroModal.show('details-modal');
             }
         });
     </script>

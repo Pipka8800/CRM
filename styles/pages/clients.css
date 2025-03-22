@@ -1376,3 +1376,92 @@ td[data-email]:hover {
 .open-chat-btn:hover {
     background-color: #45a049;
 }
+
+.discounted-price {
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #7f8c8d;
+    font-size: 0.85em;
+    position: relative;
+    top: -10px;
+    right: -5px;
+}
+
+/* Очищаем все возможные стили, которые могут влиять на отображение цен */
+table td:nth-child(5) {
+    position: relative;
+    white-space: nowrap;
+}
+
+/* Убираем все надстрочные символы и прочие артефакты */
+table td:nth-child(5) sup,
+table td:nth-child(5) sub,
+table td:nth-child(5) > span:not([style]) {
+    display: none !important;
+}
+
+/* Стили для зачеркнутой оригинальной цены */
+table td:nth-child(5) s {
+    margin-left: 8px;
+    font-size: 0.9em;
+    color: #888;
+}
+
+/* Убираем любые символы, добавляемые после содержимого ячейки */
+table td:nth-child(5):after {
+    content: none !important;
+}
+
+/* Стиль для цены со скидкой */
+table td:nth-child(5) span[style] {
+    font-weight: bold;
+    color: #e44d26 !important;
+}
+
+/* Контейнер для цены */
+.price-container {
+    position: relative;
+    padding-top: 20px; /* Место для верхней зачеркнутой цены */
+    text-align: left;
+    min-width: 90px;
+}
+
+/* Стиль для оригинальной цены (зачеркнутой) */
+.original-price {
+    position: absolute;
+    top: 0;
+    right: 10px; /* Немного правее */
+    font-size: 0.85em;
+    color: #888;
+    text-decoration: line-through;
+}
+
+/* Стиль для цены со скидкой */
+.discounted-price {
+    font-weight: bold;
+    color: #e44d26;
+    font-size: 1.01em;
+}
+
+/* Очистка всех лишних элементов */
+table td:nth-child(5) sup,
+table td:nth-child(5) sub,
+table td:nth-child(5) > span:not(.price-container):not(.original-price):not(.discounted-price) {
+    display: none !important;
+}
+
+/* Убираем любые элементы после ячейки с ценой */
+table td:nth-child(5):after,
+table td:nth-child(5):before {
+    content: none !important;
+}
+
+/* Убедимся, что ячейка правильно отображает контент */
+table td:nth-child(5) {
+    padding: 8px;
+    vertical-align: middle;
+}

@@ -66,6 +66,7 @@ if ($userType !== 'tech') {
                 <li><a href="clients.php">Клиенты</a></li>
                 <li><a href="product.php">Товары</a></li>
                 <li><a href="orders.php">Заказы</a></li>
+                <li><a href="promotions.php">Акции</a></li>
                 <?php
                     if ($userType === 'tech') {
                         echo '<li><a href="tech.php">Обращение пользователя</a></li>';
@@ -243,6 +244,31 @@ if ($userType !== 'tech') {
                 </main>
             </div>
         </div>
+    </div>
+
+    <!-- техподдержка -->
+    <button class="support-btn">
+        <i class="fa fa-question"></i>
+    </button>
+
+    <div class="support-create-ticket">
+        <form action="api/tickets/CreateTicket.php" method="POST" enctype="multipart/form-data">
+            <label for="type">Тип обращения</label>
+            <select name="type" id="type" class="support-select">
+                <option value="tech">Техническая неполадка</option>
+                <option value="crm">Проблема с crm</option>
+            </select>
+            <label for="message">Текст обращения</label>
+            <textarea name="message" id="message"></textarea>
+            <input type="file" name="ticket_file" id="ticket_file">
+            <button type="submit" class="support-submit">Создать тикет</button>
+        </form>
+        <button class="my-tickets-btn">Мои обращения</button>
+    </div>
+
+    <div class="my-tickets-container">
+        <h3>Мои обращения</h3>
+        <div class="tickets-list"></div>
     </div>
 
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
@@ -442,6 +468,170 @@ if ($userType !== 'tech') {
                 });
             });
         });
+    });
+
+    // Инициализация и работа компонента техподдержки
+    document.addEventListener('DOMContentLoaded', function() {
+        const supportBtn = document.querySelector('.support-btn');
+        const supportPanel = document.querySelector('.support-create-ticket');
+        const myTicketsBtn = document.querySelector('.my-tickets-btn');
+        const myTicketsContainer = document.querySelector('.my-tickets-container');
+        
+        // Обработчик кнопки техподдержки
+        if (supportBtn) {
+            supportBtn.addEventListener('click', function() {
+                supportPanel.classList.toggle('active');
+                myTicketsContainer.classList.remove('active');
+            });
+        }
+        
+        // Обработчик кнопки "Мои обращения"
+        if (myTicketsBtn) {
+            myTicketsBtn.addEventListener('click', function() {
+                supportPanel.classList.remove('active');
+                myTicketsContainer.classList.toggle('active');
+                loadMyTickets();
+            });
+        }
+        
+        // Функция загрузки списка тикетов пользователя
+        function loadMyTickets() {
+            const ticketsList = document.querySelector('.tickets-list');
+            
+            fetch('api/tickets/GetMyTickets.php')
+                .then(response => response.json())
+                .then(data => {
+                    ticketsList.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        ticketsList.innerHTML = '<p>У вас пока нет обращений</p>';
+                        return;
+                    }
+                    
+                    data.forEach(ticket => {
+                        const statusClass = `status-${ticket.status}`;
+                        let statusText = '';
+                        
+                        switch(ticket.status) {
+                            case 'waiting':
+                                statusText = 'Ожидает';
+                                break;
+                            case 'work':
+                                statusText = 'В работе';
+                                break;
+                            case 'complete':
+                                statusText = 'Выполнено';
+                                break;
+                        }
+                        
+                        ticketsList.innerHTML += `
+                            <div class="ticket-item ${statusClass}">
+                                <div class="ticket-header">
+                                    <span class="ticket-id">#${ticket.id}</span>
+                                    <span class="ticket-status">${statusText}</span>
+                                </div>
+                                <div class="ticket-type">${ticket.type === 'tech' ? 'Техническая неполадка' : 'Проблема с CRM'}</div>
+                                <div class="ticket-message">${ticket.message}</div>
+                                <div class="ticket-date">${new Date(ticket.created_at).toLocaleString()}</div>
+                                <button class="chat-btn" onclick="openChat(${ticket.id})">
+                                    <i class="fa fa-comments"></i> Чат
+                                </button>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке тикетов:', error);
+                    ticketsList.innerHTML = '<p>Ошибка при загрузке обращений</p>';
+                });
+        }
+        
+        // Функция для открытия чата по ID тикета
+        window.openUserChat = function(ticketId) {
+            // Сохраняем ID текущего тикета для отправки сообщений
+            window.currentTicketId = ticketId;
+            
+            // Загружаем сообщения
+            loadChatMessages(ticketId);
+            
+            // Открываем модальное окно чата
+            MicroModal.show('chat-modal');
+        };
+        
+        // Функция загрузки сообщений чата
+        function loadChatMessages(ticketId) {
+            const chatMessages = document.getElementById('chat-messages');
+            
+            fetch(`api/tickets/GetTicketMessages.php?ticket_id=${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    chatMessages.innerHTML = '';
+                    
+                    data.forEach(message => {
+                        const messageTime = new Date(message.created_at).toLocaleString();
+                        const messageClass = message.sender_type === 'tech' ? 'tech' : 'user';
+                        const senderLabel = message.sender_type === 'tech' ? 'Техподдержка' : 'Вы';
+                        
+                        chatMessages.innerHTML += `
+                            <div class="chat-message ${messageClass}">
+                                <div class="message-sender">${senderLabel}</div>
+                                <div class="message-text">${message.message}</div>
+                                <span class="message-time">${messageTime}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    // Прокручиваем чат вниз
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке сообщений:', error);
+                    chatMessages.innerHTML = '<p class="error-message">Ошибка при загрузке сообщений</p>';
+                });
+        }
+        
+        // Отправка сообщения в чат
+        const sendMessageBtn = document.getElementById('send-message');
+        if (sendMessageBtn) {
+            sendMessageBtn.addEventListener('click', function() {
+                const input = document.getElementById('chat-input');
+                const message = input.value.trim();
+                
+                if (message && window.currentTicketId) {
+                    const formData = new FormData();
+                    formData.append('ticket_id', window.currentTicketId);
+                    formData.append('message', message);
+                    
+                    fetch('api/tickets/SendMessage.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            input.value = '';
+                            loadChatMessages(window.currentTicketId);
+                        } else {
+                            alert('Ошибка при отправке сообщения: ' + (data.message || 'Неизвестная ошибка'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        alert('Ошибка при отправке сообщения');
+                    });
+                }
+            });
+        }
+        
+        // Отправка по нажатию на Enter
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('send-message').click();
+                }
+            });
+        }
     });
     </script>
 </body>
